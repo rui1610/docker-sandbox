@@ -2,7 +2,7 @@ FROM python:3.10-alpine
 ENV HOME_FOLDER /mp3metadatafetcher
 WORKDIR $HOME_FOLDER
 
-COPY requirements.txt /tmp/pip-tmp/
+COPY multimedia/mp3metadatafetcher/requirements.txt /tmp/pip-tmp/
 COPY mp3metadatafetcher.py $HOME_FOLDER
 
 RUN  apk add  --no-cache --virtual .tmp gcc libc-dev linux-headers jpeg-dev zlib-dev \

@@ -1,4 +1,4 @@
-name: Build mp3metadatafetcher
+name: Build docker images
 
 on:
   push:
@@ -14,5 +14,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image
+    - name: Build the Docker image for the mp3metadatafetcher
       run: docker build . --file ./multimedia/mp3metadatafetcher/Dockerfile --tag mp3metadatafetcher:$(date +%s)
+
+    - name: Build the Docker image for the picturetool
+      run: docker build . --file ./multimedia/picturetool/Dockerfile --tag picturetool:$(date +%s)

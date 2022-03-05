@@ -15,4 +15,4 @@ RUN  apk add  --no-cache --virtual .tmp gcc libc-dev linux-headers jpeg-dev zlib
     && mkdir -p $HOME_FOLDER/media \
     && mkdir -p $HOME_FOLDER/converted 
 
-CMD ["python","mp3metadatafetcher.py"]
+CMD ["bash"]

@@ -1,0 +1,12 @@
+exif==1.3.4
+ExifRead==2.3.2
+filetype==1.0.9
+geographiclib==1.52
+geopy==2.2.0
+gpsphoto==2.2.3
+mutagen==1.45.1
+piexif==1.1.3
+Pillow==9.0.0
+plum-py==0.7.2
+python-dateutil==2.8.2
+six==1.16.0

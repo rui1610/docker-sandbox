@@ -332,3 +332,4 @@ moveFiles()
 removeEmptyFolders(sourceFolder)
 
 #removeDuplicates(sourceFolder)
+

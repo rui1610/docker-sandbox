@@ -24,13 +24,13 @@ def buildNewPictureFilename(filename,pictureDate,typeString):
     if not os.path.exists(newTargetFolder):
         os.makedirs(newTargetFolder)
 
-    newFilename=newTargetFolder + my_time.strftime(typeString+'%Y%m%d_%H%M%S')  + "." + suffix
+    newFilename=newTargetFolder + my_time.strftime(typeString+'%Y%m%d_%H%M%S')  +  suffix
 
     # If the file already exists, add a suffix to the name with the current timestamp
     if os.path.isfile(newFilename):
         now = datetime.now()
         temp = now.strftime("%H%M%S%f")
-        newFilename=newTargetFolder + typeString + my_time.strftime('%Y%m%d_%H%M%S') + "_TMP" + temp + "." + suffix
+        newFilename=newTargetFolder + typeString + my_time.strftime('%Y%m%d_%H%M%S') + "_TMP" + temp + suffix
         print("- FILENAMEBUILDINFO: File was already existing. Added the current timestamp as suffix " + newFilename)
     return  newFilename
 

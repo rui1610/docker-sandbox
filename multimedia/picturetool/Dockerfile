@@ -24,4 +24,4 @@ RUN apk add --update --no-cache --virtual .tmp \
 COPY multimedia/picturetool/picturetool.py $HOME_FOLDER
 COPY multimedia/picturetool/gpstool.py     $HOME_FOLDER
 
-CMD ["bash"]
+#CMD ["bash"]

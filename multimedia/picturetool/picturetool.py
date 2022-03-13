@@ -19,7 +19,11 @@ FIXEDDATE=None
 
 def buildNewPictureFilename(filename,pictureDate,typeString):
     dir,name,prefix,suffix = splitFileName(filename)
+    pictureDate = pictureDate.replace(": ", ":0")
+    
     my_time = datetime.strptime(pictureDate, '%Y:%m:%d %H:%M:%S')
+
+
     newTargetFolder=targetFolder + "/bilder/" + my_time.strftime('%Y/%m/%d/')
     if not os.path.exists(newTargetFolder):
         os.makedirs(newTargetFolder)

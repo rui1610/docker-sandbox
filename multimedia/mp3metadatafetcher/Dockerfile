@@ -13,6 +13,7 @@ RUN  apk add  --no-cache --virtual .tmp gcc libc-dev linux-headers jpeg-dev zlib
     && rm -r /tmp/* \
     && rm -rf /var/cache/apk/* \
     && mkdir -p $HOME_FOLDER/media \
-    && mkdir -p $HOME_FOLDER/converted 
-
+    && mkdir -p $HOME_FOLDER/converted \
+    && cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+    
 CMD ["bash"]

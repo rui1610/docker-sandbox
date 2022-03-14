@@ -19,7 +19,8 @@ RUN apk add --update --no-cache --virtual .tmp \
     && rm -rf /var/cache/apk/* \
     && mkdir -p $HOME_FOLDER/source \
     && mkdir -p $HOME_FOLDER/target \
-    && mkdir -p $HOME_FOLDER/temp 
+    && mkdir -p $HOME_FOLDER/temp \
+    && cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 
 COPY multimedia/picturetool/picturetool.py $HOME_FOLDER
 COPY multimedia/picturetool/gpstool.py     $HOME_FOLDER

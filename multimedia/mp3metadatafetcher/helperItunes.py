@@ -1,6 +1,6 @@
-import os
 import time
 import requests
+import urllib.parse
 
 from helperGeneric import checkIfGoodResult
 
@@ -9,8 +9,12 @@ def getMetadataFromItunes(searchString):
     maximumResults = 10
     searchString = searchString.replace(':', '/')
 
+    term = {"term":searchString}
 
-    req_string = 'https://itunes.apple.com/search?term=' + searchString + '&entity=musicTrack&limit=' + str(maximumResults)
+    termUrlEncoded = urllib.parse.urlencode(term)
+
+
+    req_string = 'https://itunes.apple.com/search?' + termUrlEncoded + '&entity=musicTrack&limit=' + str(maximumResults)
 
     try:
         # Adding 3 seconds of delay here to not exceed iTunes API access limits of 20 API calls per minute

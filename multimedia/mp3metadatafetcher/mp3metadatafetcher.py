@@ -1,12 +1,11 @@
-from operator import add
 import os
 import fnmatch
 import os
 from helperEyed3 import getAudioFile, getJsonFromComment, updateMp3WithMetadata
-from helperGeneric import cleanupFilenameForSearch
+from helperGeneric import cleanupFilenameForSearch, mp3ToBeUpdated
 from helperItunes import getMetadataFromItunes
 from helperJson import addKeyValuePair, saveJsonToFile
-import unidecode
+
 
 from shutil import copyfile
 
@@ -35,15 +34,17 @@ for folder, dirs, files in os.walk(FOLDERSOURCE):
     for filename in files:
         if fnmatch.fnmatch(filename, "*.mp3"):
             mp3filenameFullpath = folder + "/" + filename
-            #audiofile = getAudioFile(mp3filenameFullpath)
-            #comment = getJsonFromComment(audiofile)
-            thisFile = {"file":mp3filenameFullpath}
-            allFiles.append(thisFile)
-            saveJsonToFile(jsonFile,allFiles)
+            #print(mp3filenameFullpath)
+            toBeUpdated = mp3ToBeUpdated(mp3filenameFullpath)
+            if toBeUpdated == True:
+                thisFile = {"file":mp3filenameFullpath}
+                allFiles.append(thisFile)
 
+saveJsonToFile(jsonFile,allFiles)
 
 for file in allFiles:
     filename = file["file"]
+    print("- " + filename)
     searchString = cleanupFilenameForSearch(filename)
     if "metadataitunes" not in file or file["metadataitunes"] is None:
         thisResult = getMetadataFromItunes(searchString)
@@ -51,8 +52,8 @@ for file in allFiles:
     if "metadatamusicbrainzngs" not in file or file["metadatamusicbrainzngs"] is None:
         thisResult = getMetadataFromMusicbrainzngs(searchString)
         addKeyValuePair(file,"metadatamusicbrainzngs", thisResult)
-    audiofile = getAudioFile(mp3filenameFullpath)
-    saveJsonToFile(jsonFile,allFiles)
+    audiofile = getAudioFile(filename)
+    #saveJsonToFile(jsonFile,allFiles)
     updateMp3WithMetadata(audiofile,file)
 
 #cleanUpFolders()

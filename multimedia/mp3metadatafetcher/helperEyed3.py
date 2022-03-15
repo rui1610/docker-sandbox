@@ -1,10 +1,9 @@
 import eyed3
 import os
 import requests
-from eyed3.id3 import Tag
+
 
 from helperJson import convertStringToJson, dictToString
-
 
 def saveAudioFile(audiofile):
     #audiofile.tag.save(version=(1,None,None))
@@ -103,6 +102,6 @@ def updateMp3WithMetadata(audiofile,metadata):
             #audiofile.tag.images.set(0, cover, 'image/jpg', u"othercover")            
             audiofile.tag.images.set(3, cover, 'image/jpg', u"cover")            
             audiofile.tag.images.set(1, icon, 'image/jpg', u"icon")            
-            audiofile.tag.images.set(2, icon, 'image/jpg', u"othericon")            
+            #audiofile.tag.images.set(2, icon, 'image/jpg', u"othericon")            
             
             saveAudioFile(audiofile)

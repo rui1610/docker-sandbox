@@ -2,6 +2,9 @@ import os
 import re
 import unidecode
 
+from helperEyed3 import getAudioFile, saveAudioFile
+
+
 def cleanUpText(text):
 
     if (text != None):
@@ -68,4 +71,24 @@ def checkIfGoodResult(searchString, artist, title):
         result = True
 
     return result
+
+def mp3ToBeUpdated(mp3File):
+    toBeUpdated = False
+    audiofile = getAudioFile(mp3File)
+
+    artist = audiofile.tag.artist
+    title = audiofile.tag.title
+    counter = len(  audiofile.tag.images )
+
+    if artist is None or artist == "":
+        toBeUpdated = True
+    
+    if title is None or title == "":
+        toBeUpdated = True
+
+    if counter == 0:
+        toBeUpdated = True
+
+    return toBeUpdated
+
 

@@ -17,5 +17,5 @@ RUN  apk add  --no-cache --virtual .tmp gcc libc-dev linux-headers jpeg-dev zlib
     && mkdir -p $HOME_FOLDER/converted \
     && cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime
     
-ENTRYPOINT ["python","watchMediaFolder.py]
+ENTRYPOINT ["python","watchMediaFolder.py"]
 #CMD ["bash"]

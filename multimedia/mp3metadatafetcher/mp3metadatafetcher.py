@@ -25,35 +25,35 @@ def cleanUpFolders():
     os.system(command)
 
 #################################################################
-cleanUpFolders()
 
-jsonFile="songs.json"
+def addMetadataToFiles()
+    cleanUpFolders()
+    allFiles=[]
+    for folder, dirs, files in os.walk(FOLDERSOURCE):
+        for filename in files:
+            if fnmatch.fnmatch(filename, "*.mp3"):
+                mp3filenameFullpath = folder + "/" + filename
+                #print(mp3filenameFullpath)
+                toBeUpdated = mp3ToBeUpdated(mp3filenameFullpath)
+                if toBeUpdated == True:
+                    thisFile = {"file":mp3filenameFullpath}
+                    allFiles.append(thisFile)
 
-allFiles=[]
-for folder, dirs, files in os.walk(FOLDERSOURCE):
-    for filename in files:
-        if fnmatch.fnmatch(filename, "*.mp3"):
-            mp3filenameFullpath = folder + "/" + filename
-            #print(mp3filenameFullpath)
-            toBeUpdated = mp3ToBeUpdated(mp3filenameFullpath)
-            if toBeUpdated == True:
-                thisFile = {"file":mp3filenameFullpath}
-                allFiles.append(thisFile)
-
-saveJsonToFile(jsonFile,allFiles)
-
-for file in allFiles:
-    filename = file["file"]
-    print("- " + filename)
-    searchString = cleanupFilenameForSearch(filename)
-    if "metadataitunes" not in file or file["metadataitunes"] is None:
-        thisResult = getMetadataFromItunes(searchString)
-        addKeyValuePair(file,"metadataitunes", thisResult)
-    if "metadatamusicbrainzngs" not in file or file["metadatamusicbrainzngs"] is None:
-        thisResult = getMetadataFromMusicbrainzngs(searchString)
-        addKeyValuePair(file,"metadatamusicbrainzngs", thisResult)
-    audiofile = getAudioFile(filename)
+    #jsonFile="songs.json"
     #saveJsonToFile(jsonFile,allFiles)
-    updateMp3WithMetadata(audiofile,file)
+
+    for file in allFiles:
+        filename = file["file"]
+        print("- " + filename)
+        searchString = cleanupFilenameForSearch(filename)
+        if "metadataitunes" not in file or file["metadataitunes"] is None:
+            thisResult = getMetadataFromItunes(searchString)
+            addKeyValuePair(file,"metadataitunes", thisResult)
+        if "metadatamusicbrainzngs" not in file or file["metadatamusicbrainzngs"] is None:
+            thisResult = getMetadataFromMusicbrainzngs(searchString)
+            addKeyValuePair(file,"metadatamusicbrainzngs", thisResult)
+        audiofile = getAudioFile(filename)
+        #saveJsonToFile(jsonFile,allFiles)
+        updateMp3WithMetadata(audiofile,file)
 
 #cleanUpFolders()

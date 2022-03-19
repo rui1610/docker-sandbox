@@ -18,9 +18,6 @@ jobs:
       - name: Build the Docker image for the mp3metadatafetcher
         run: docker build . --file ./multimedia/mp3metadatafetcher/Dockerfile --tag mp3metadatafetcher
 
-      - name: Build the Docker image for the picturetool
-        run: docker build . --file ./multimedia/picturetool/Dockerfile --tag picturetool
-
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
@@ -46,6 +43,9 @@ jobs:
 
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION          
+
+      - name: Build the Docker image for the picturetool
+        run: docker build . --file ./multimedia/picturetool/Dockerfile --tag picturetool
 
       - name: Push image picturetool
         run: |

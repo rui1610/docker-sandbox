@@ -23,6 +23,9 @@ def getAudioFile(mp3File):
             saveAudioFile(audiofile)
     except Exception as e:
         print ("- initializeMp3File: EXCEPTION " + str(e))
+        print ("- initializing mp3 file for you")
+        audiofile.initTag()
+        saveAudioFile(audiofile)
     return audiofile
 
 def getArtistAndTitle(mp3JsonInfo):

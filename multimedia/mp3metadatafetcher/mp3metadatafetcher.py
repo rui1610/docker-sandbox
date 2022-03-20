@@ -10,7 +10,7 @@ from helperJson import addKeyValuePair, saveJsonToFile
 from shutil import copyfile
 
 from helperMusicBrainzngs import getMetadataFromMusicbrainzngs
-from multimedia.mp3metadatafetcher.helperGeneric import moveFile
+from helperGeneric import moveFile
 
 FOLDERSOURCE              = "/mp3metadatafetcher/media"
 GETMUSICBRAINZCOVERIMAGES = True
@@ -28,8 +28,31 @@ def cleanUpFolders():
     os.system(command)
     command = "find " + FOLDERSOURCE + " -name '*.json' -delete"
     os.system(command)
+    command = "find " + FOLDERSOURCE + " -name '*.jpg' -delete"
+    os.system(command)
 
 #################################################################
+
+def addMetadataToFile(mp3filenameFullpath):
+
+    toBeUpdated = mp3ToBeUpdated(mp3filenameFullpath)
+    if toBeUpdated == True:
+        thisFile = {"file":mp3filenameFullpath}
+        print("- " + mp3filenameFullpath)
+        searchString = cleanupFilenameForSearch(mp3filenameFullpath)
+        if "metadataitunes" not in thisFile or thisFile["metadataitunes"] is None:
+            thisResult = getMetadataFromItunes(searchString)
+            addKeyValuePair(thisFile,"metadataitunes", thisResult)
+        if "metadatamusicbrainzngs" not in thisFile or thisFile["metadatamusicbrainzngs"] is None:
+            thisResult = getMetadataFromMusicbrainzngs(searchString)
+            addKeyValuePair(thisFile,"metadatamusicbrainzngs", thisResult)
+        audiofile = getAudioFile(mp3filenameFullpath)
+        updateMp3WithMetadata(audiofile,thisFile)
+        moveFile(audiofile,thisFile)
+    else:
+        audiofile = getAudioFile(mp3filenameFullpath)
+        moveFile(audiofile,mp3filenameFullpath)
+
 
 def addMetadataToFiles():
     allFiles=[]

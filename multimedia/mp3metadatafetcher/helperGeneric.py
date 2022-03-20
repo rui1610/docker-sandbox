@@ -77,19 +77,21 @@ def checkIfGoodResult(searchString, artist, title):
 def mp3ToBeUpdated(mp3File):
     toBeUpdated = False
     audiofile = getAudioFile(mp3File)
-
-    artist = audiofile.tag.artist
-    title = audiofile.tag.title
-    counter = len(  audiofile.tag.images )
-
-    if artist is None or artist == "":
+    if audiofile is None:
         toBeUpdated = True
-    
-    if title is None or title == "":
-        toBeUpdated = True
+    else:
+        artist = audiofile.tag.artist
+        title = audiofile.tag.title
+        counter = len(  audiofile.tag.images )
 
-    if counter == 0:
-        toBeUpdated = True
+        if artist is None or artist == "":
+            toBeUpdated = True
+        
+        if title is None or title == "":
+            toBeUpdated = True
+
+        if counter == 0:
+            toBeUpdated = True
 
     return toBeUpdated
 
@@ -100,13 +102,20 @@ def moveFile(audiofile, sourceFile):
     #audiofile = cleanupAudiofileArtistTitle(audiofile)
     artist = audiofile.tag.artist
     title = audiofile.tag.title
+    counterImages = len(  audiofile.tag.images )
 
     filenameOnly = os.path.basename(sourceFile)
     filenameBase = os.path.splitext(filenameOnly)[0]
     textWithoutBrackets = re.sub("[\(\[].*?[\)\]]", "", filenameBase).strip()
 
-    folderDestinationNew = FOLDERDESTINATION + "/" + artist + "/"
-    newFilename = folderDestinationNew + artist + " - " + title + ".mp3"
+    newFilename = None
+    if counterImages > 0:
+        folderDestinationNew = FOLDERDESTINATION + "/ready/" + artist + "/"
+        newFilename = folderDestinationNew + artist + " - " + title + ".mp3"
+    else:
+        folderDestinationNew = FOLDERDESTINATION + "/noCoverImageFound/"        
+        newFilename = folderDestinationNew + filenameOnly
+
 
     try:
         path = os.path.dirname(newFilename)

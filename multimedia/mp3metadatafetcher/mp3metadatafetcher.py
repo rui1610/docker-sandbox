@@ -23,11 +23,14 @@ def cleanUpFolders():
     os.system(command)
     command = "find " + FOLDERSOURCE + " -type d -empty -delete"
     os.system(command)
+    command = "find " + FOLDERSOURCE + " -name '*.webp' -delete"
+    os.system(command)
+    command = "find " + FOLDERSOURCE + " -name '*.json' -delete"
+    os.system(command)
 
 #################################################################
 
 def addMetadataToFiles():
-    cleanUpFolders()
     allFiles=[]
     for folder, dirs, files in os.walk(FOLDERSOURCE):
         for filename in files:
@@ -38,9 +41,6 @@ def addMetadataToFiles():
                 if toBeUpdated == True:
                     thisFile = {"file":mp3filenameFullpath}
                     allFiles.append(thisFile)
-
-    #jsonFile="songs.json"
-    #saveJsonToFile(jsonFile,allFiles)
 
     for file in allFiles:
         filename = file["file"]
@@ -53,7 +53,6 @@ def addMetadataToFiles():
             thisResult = getMetadataFromMusicbrainzngs(searchString)
             addKeyValuePair(file,"metadatamusicbrainzngs", thisResult)
         audiofile = getAudioFile(filename)
-        #saveJsonToFile(jsonFile,allFiles)
         updateMp3WithMetadata(audiofile,file)
 
-#cleanUpFolders()
+    cleanUpFolders()

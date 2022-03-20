@@ -26,7 +26,7 @@ def cleanUpFolders():
 
 #################################################################
 
-def addMetadataToFiles()
+def addMetadataToFiles():
     cleanUpFolders()
     allFiles=[]
     for folder, dirs, files in os.walk(FOLDERSOURCE):

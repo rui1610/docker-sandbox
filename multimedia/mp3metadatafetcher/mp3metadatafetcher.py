@@ -10,6 +10,7 @@ from helperJson import addKeyValuePair, saveJsonToFile
 from shutil import copyfile
 
 from helperMusicBrainzngs import getMetadataFromMusicbrainzngs
+from multimedia.mp3metadatafetcher.helperGeneric import moveFile
 
 FOLDERSOURCE              = "/mp3metadatafetcher/media"
 GETMUSICBRAINZCOVERIMAGES = True
@@ -54,5 +55,6 @@ def addMetadataToFiles():
             addKeyValuePair(file,"metadatamusicbrainzngs", thisResult)
         audiofile = getAudioFile(filename)
         updateMp3WithMetadata(audiofile,file)
+        moveFile(audiofile,filename)
 
     cleanUpFolders()

@@ -1,9 +1,11 @@
 import os
 import re
 import unidecode
+from shutil import copyfile
 
 from helperEyed3 import getAudioFile, saveAudioFile
-
+DELETESOURCEFILES = True
+FOLDERDESTINATION = "converted"
 
 def cleanUpText(text):
 
@@ -92,3 +94,38 @@ def mp3ToBeUpdated(mp3File):
     return toBeUpdated
 
 
+#################################################################
+def moveFile(audiofile, sourceFile):
+
+    #audiofile = cleanupAudiofileArtistTitle(audiofile)
+    artist = audiofile.tag.artist
+    title = audiofile.tag.title
+
+    filenameOnly = os.path.basename(sourceFile)
+    filenameBase = os.path.splitext(filenameOnly)[0]
+    textWithoutBrackets = re.sub("[\(\[].*?[\)\]]", "", filenameBase).strip()
+
+    folderDestinationNew = FOLDERDESTINATION + "/" + artist + "/"
+    newFilename = folderDestinationNew + artist + " - " + title + ".mp3"
+
+    try:
+        path = os.path.dirname(newFilename)
+
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        fileExists = os.path.isfile(newFilename) 
+
+        if (fileExists == True):
+            os.remove(newFilename)
+        
+        copyfile(sourceFile, newFilename)
+
+        if (DELETESOURCEFILES == True):
+            os.remove(sourceFile)
+            print ("- moveFile: moved file from " + sourceFile + " to " + newFilename)
+    except Exception as e:
+        print ("- moveFile: EXCEPTION " + str(e))
+        audiofile = None
+    
+    return None

@@ -18,5 +18,3 @@ for event in i.event_gen(yield_nones=False):
         fullFilename = path + "/" + filename
         addMetadataToFile(fullFilename)
         continue
-
-

@@ -48,7 +48,7 @@ def addMetadataToFile(mp3filenameFullpath):
             addKeyValuePair(thisFile,"metadatamusicbrainzngs", thisResult)
         audiofile = getAudioFile(mp3filenameFullpath)
         updateMp3WithMetadata(audiofile,thisFile)
-        moveFile(audiofile,thisFile)
+        moveFile(audiofile,mp3filenameFullpath)
     else:
         audiofile = getAudioFile(mp3filenameFullpath)
         moveFile(audiofile,mp3filenameFullpath)

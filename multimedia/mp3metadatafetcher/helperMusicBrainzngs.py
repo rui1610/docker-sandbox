@@ -9,28 +9,21 @@ MB_USERAGGENT_NAME    = "Rui's new app"
 MB_USERAGGENT_VERSION = "0.4"
 MB_USERAGGENT_LINK    = "https://ourNewMusikApp.de"
 
-
 def getMetadataFromMusicbrainzngs(searchString):
 
-    maximumResults = 10
-    musicbrainzngs.set_useragent(MB_USERAGGENT_NAME, MB_USERAGGENT_VERSION, MB_USERAGGENT_LINK)
-
-    response = musicbrainzngs.search_release_groups(searchString, limit=maximumResults)
-
     try:
+        response = sendRequestToMusicbrainz(searchString)
         result = []
 
-        for thisResponse in response['release-group-list']:
-            artist     = thisResponse["artist-credit"][0]["name"]
-            title      = thisResponse["release-list"][0]["title"]
+        for thisResponse in response['recording-list']:
+            artist     = thisResponse["artist-credit-phrase"]
+            title      = thisResponse["title"]
             releaseId  = thisResponse["release-list"][0]["id"]
             fitScore   = thisResponse["ext:score"]
             goodResult = checkIfGoodResult(searchString, artist, title)
             if (goodResult == True and len(result) < 5):
-                thisResponse["releaseId"] = releaseId
                 if fitScore is not None and int(fitScore) > 90:
                     result.append(thisResponse)
-
         return result
 
     except Exception as e:
@@ -40,3 +33,12 @@ def getMetadataFromMusicbrainzngs(searchString):
         return None
 
     return None
+
+def sendRequestToMusicbrainz(searchString):
+
+    maximumResults = 50
+    musicbrainzngs.set_useragent(MB_USERAGGENT_NAME, MB_USERAGGENT_VERSION, MB_USERAGGENT_LINK)
+
+    response = musicbrainzngs.search_recordings(searchString, limit=maximumResults)
+
+    return response

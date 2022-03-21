@@ -1,9 +1,10 @@
+import re
 import eyed3
 import os
 import requests
 
-
-from helperJson import convertStringToJson, dictToString
+from helperJson import convertStringToJson, saveJsonToFile
+import musicbrainzngs
 
 def saveAudioFile(audiofile):
     #audiofile.tag.save(version=(1,None,None))
@@ -54,6 +55,38 @@ def getITunesCoverSmall(response):
     url = response['artworkUrl30']
     return requests.get(url, stream=True).raw.data
 
+#################################################################
+def getMusicbrainzCover(releaseId,type):
+    MB_USERAGGENT_NAME    = "Rui's new app"
+    MB_USERAGGENT_VERSION = "0.4"
+    MB_USERAGGENT_LINK    = "https://ourNewMusikApp.de"    
+    musicbrainzngs.set_useragent(MB_USERAGGENT_NAME, MB_USERAGGENT_VERSION, MB_USERAGGENT_LINK)
+    try:
+        list = musicbrainzngs.get_image_list(releaseId)
+        saveJsonToFile("images.json",list)
+        urlCover=None
+        urlIcon=None
+        if "images" in list and len(list['images']) > 0:
+            imageDetails = list['images'][0] 
+            if "image" in imageDetails:
+                urlCover = imageDetails["image"]
+            else:
+                if "thumbnails" in imageDetails and "large" in imageDetails["thumbnails"]:
+                    urlCover = imageDetails["thumbnails"]["large"]
+        if "thumbnails" in imageDetails and "small" in imageDetails["thumbnails"]:
+            urlIcon = imageDetails["thumbnails"]["small"]
+
+        if type == "icon":
+            return requests.get(urlIcon, stream=True).raw.data
+        else:
+            return requests.get(urlCover, stream=True).raw.data
+
+
+
+    except Exception as e:
+        print (" - addCoverImageForReleaseId: EXCEPTION found")
+        print ("   >> " + str(e))
+        return None
 
 def updateMp3WithMetadata(audiofile,metadata):
     
@@ -108,3 +141,56 @@ def updateMp3WithMetadata(audiofile,metadata):
             #audiofile.tag.images.set(2, icon, 'image/jpg', u"othericon")            
             
             saveAudioFile(audiofile)
+            return True
+
+        if "metadatamusicbrainzngs" in metadata and len(metadata["metadatamusicbrainzngs"]) > 0:
+            myData = metadata["metadatamusicbrainzngs"]
+            # Just take the first response and send it back
+            thisResponse = myData[0]
+
+            audiofile.tag.artist = thisResponse["artist-credit-phrase"]
+            audiofile.tag.title  = thisResponse["title"]
+
+            releaseId = None
+
+            if ('release-list' in thisResponse and len(thisResponse["release-list"]) > 0):
+                audiofile.tag.album = thisResponse["release-list"][0]["title"]
+
+                if ('date' in thisResponse["release-list"][0]):
+                    audiofile.tag.releaseDate = thisResponse["release-list"][0]["date"]
+                if ('id' in thisResponse["release-list"][0]):
+                    releaseId = thisResponse["release-list"][0]["id"]
+                    cover = getMusicbrainzCover(releaseId,"cover")
+                    audiofile.tag.images.set(3, cover, 'image/jpg', u"cover")            
+                    cover = getMusicbrainzCover(releaseId,"icon")
+                    audiofile.tag.images.set(1, cover, 'image/jpg', u"icon")            
+
+                if ('medium-list' in thisResponse["release-list"][0]):
+                    if len(thisResponse["release-list"][0]["medium-list"]) > 0:
+                        entryMediumList = thisResponse["release-list"][0]["medium-list"]
+                        if 'track-list' in entryMediumList[0] and len(entryMediumList[0]["track-list"]) > 0:
+                            audiofile.tag.track = entryMediumList[0]["track-list"][0]["number"]
+                            audiofile.tag.trackTimeMillis = entryMediumList[0]["track-list"][0]["length"]
+
+                if ('medium-track-count' in thisResponse["release-list"][0]):
+                    audiofile.tag.track_total = thisResponse["release-list"][0]["medium-track-count"] 
+
+                if ('medium-count' in thisResponse["release-list"][0]):
+                    audiofile.tag.disc = thisResponse["release-list"][0]["medium-count"] 
+
+            if ('tag-list' in thisResponse):
+                tags = thisResponse["tag-list"]
+                primaryGenre = None
+                maxCounter = 0
+                for tag in tags:
+                    count = int(tag["count"])
+                    name = tag["name"]
+                    if count > maxCounter:
+                        primaryGenre = name
+                if primaryGenre is not None:
+                    audiofile.tag.primaryGenreName= primaryGenre
+                    audiofile.tag.genre = primaryGenre    
+            saveAudioFile(audiofile)
+            return True
+
+

@@ -65,6 +65,10 @@ def addMetadataToFiles():
                 if toBeUpdated == True:
                     thisFile = {"file":mp3filenameFullpath}
                     allFiles.append(thisFile)
+                else:
+                    audiofile = getAudioFile(mp3filenameFullpath)
+                    moveFile(audiofile,mp3filenameFullpath)
+
 
     for file in allFiles:
         filename = file["file"]

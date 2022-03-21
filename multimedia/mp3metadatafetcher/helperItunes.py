@@ -6,7 +6,7 @@ from helperGeneric import checkIfGoodResult
 
 def getMetadataFromItunes(searchString):
 
-    maximumResults = 10
+    maximumResults = 50
     searchString = searchString.replace(':', '/')
 
     term = {"term":searchString}

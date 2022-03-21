@@ -3,7 +3,7 @@ import re
 import unidecode
 from shutil import copyfile
 
-from helperEyed3 import getAudioFile, saveAudioFile
+from helperEyed3 import getAudioFile
 DELETESOURCEFILES = True
 FOLDERDESTINATION = "converted"
 

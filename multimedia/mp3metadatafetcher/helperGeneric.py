@@ -36,7 +36,7 @@ def specialCleanUpForArtist(artist,splitText):
 
 
 # #################################################################
-def cleanupFilenameForSearch(filename):
+def cleanupFilenameForSearch(audiofile, filename):
 
     filenameOnly = os.path.basename(filename)
     filenameBase = os.path.splitext(filenameOnly)[0]
@@ -47,6 +47,13 @@ def cleanupFilenameForSearch(filename):
     text = specialCleanUpForArtist(text,",")
     text = specialCleanUpForArtist(text,"&")
 
+    if " - " not in text:
+        artist = audiofile.tag.artist
+        title = audiofile.tag.title
+        if artist is not None and title is not None:
+            text = artist + " - " + title
+        if artist is not None and title is None:
+            text = artist + " - " + text
     return text
 
 #################################################################
@@ -106,6 +113,14 @@ def moveFile(audiofile, sourceFile):
 
     filenameOnly = os.path.basename(sourceFile)
     filenameBase = os.path.splitext(filenameOnly)[0]
+
+    if artist is not None:
+        artist = artist.strip()
+    if title is not None:
+        title = title.strip()
+    else:
+        title = filenameBase
+
     textWithoutBrackets = re.sub("[\(\[].*?[\)\]]", "", filenameBase).strip()
 
     newFilename = None

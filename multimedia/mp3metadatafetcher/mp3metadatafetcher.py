@@ -73,14 +73,14 @@ def addMetadataToFiles():
     for file in allFiles:
         filename = file["file"]
         print("- " + filename)
-        searchString = cleanupFilenameForSearch(filename)
+        audiofile = getAudioFile(filename)
+        searchString = cleanupFilenameForSearch(audiofile, filename)
         if "metadataitunes" not in file or file["metadataitunes"] is None:
             thisResult = getMetadataFromItunes(searchString)
             addKeyValuePair(file,"metadataitunes", thisResult)
         if "metadatamusicbrainzngs" not in file or file["metadatamusicbrainzngs"] is None:
             thisResult = getMetadataFromMusicbrainzngs(searchString)
             addKeyValuePair(file,"metadatamusicbrainzngs", thisResult)
-        audiofile = getAudioFile(filename)
         updateMp3WithMetadata(audiofile,file)
         moveFile(audiofile,filename)
 

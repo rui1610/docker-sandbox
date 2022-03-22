@@ -18,7 +18,6 @@ def getMetadataFromMusicbrainzngs(searchString):
         for thisResponse in response['recording-list']:
             artist     = thisResponse["artist-credit-phrase"]
             title      = thisResponse["title"]
-            releaseId  = thisResponse["release-list"][0]["id"]
             fitScore   = thisResponse["ext:score"]
             goodResult = checkIfGoodResult(searchString, artist, title)
             if (goodResult == True and len(result) < 5):

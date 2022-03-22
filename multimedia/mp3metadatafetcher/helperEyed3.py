@@ -161,9 +161,11 @@ def updateMp3WithMetadata(audiofile,metadata):
                 if ('id' in thisResponse["release-list"][0]):
                     releaseId = thisResponse["release-list"][0]["id"]
                     cover = getMusicbrainzCover(releaseId,"cover")
-                    audiofile.tag.images.set(3, cover, 'image/jpg', u"cover")            
+                    if cover is not None:
+                        audiofile.tag.images.set(3, cover, 'image/jpg', u"cover")            
                     cover = getMusicbrainzCover(releaseId,"icon")
-                    audiofile.tag.images.set(1, cover, 'image/jpg', u"icon")            
+                    if cover is not None:
+                        audiofile.tag.images.set(1, cover, 'image/jpg', u"icon")            
 
                 if ('medium-list' in thisResponse["release-list"][0]):
                     if len(thisResponse["release-list"][0]["medium-list"]) > 0:

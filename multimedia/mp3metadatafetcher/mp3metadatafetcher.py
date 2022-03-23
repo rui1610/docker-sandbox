@@ -11,6 +11,7 @@ from shutil import copyfile
 
 from helperMusicBrainzngs import getMetadataFromMusicbrainzngs
 from helperGeneric import moveFile
+from multimedia.mp3metadatafetcher.helperEyed3 import addNameToImageIfMissing
 
 FOLDERSOURCE              = "/mp3metadatafetcher/media"
 GETMUSICBRAINZCOVERIMAGES = True
@@ -82,6 +83,7 @@ def addMetadataToFiles():
             thisResult = getMetadataFromMusicbrainzngs(searchString)
             addKeyValuePair(file,"metadatamusicbrainzngs", thisResult)
         updateMp3WithMetadata(audiofile,file)
+        addNameToImageIfMissing(audiofile)
         moveFile(audiofile,filename)
 
     cleanUpFolders()

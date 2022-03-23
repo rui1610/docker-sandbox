@@ -196,3 +196,10 @@ def updateMp3WithMetadata(audiofile,metadata):
             return True
 
 
+def addNameToImageIfMissing(audiofile):
+
+    for image in audiofile.tag.images:
+        type = image.type
+        description = image.description
+        print(audiofile.path + ": >" + str(type) + "< - >" + str(description) + "<")
+

@@ -1,6 +1,4 @@
-import re
 import eyed3
-import os
 import requests
 
 from helperJson import convertStringToJson, saveJsonToFile
@@ -8,7 +6,19 @@ import musicbrainzngs
 
 def saveAudioFile(audiofile):
     #audiofile.tag.save(version=(1,None,None))
-    audiofile.tag.save(version=(2,3,0))
+    try:
+        audiofile.tag.save(version=(2,3,0))
+        audiofile.tag.save()
+    except Exception as e:
+        print ("- saveAudioFile: EXCEPTION " + str(e))
+        print ("                 will try to fix this this by removing the frame")
+        errorMessageSplit = str(e).split(":")
+        frameToDelete = errorMessageSplit[1].strip()
+        for fid in list(audiofile.tag.frame_set):
+            if fid.decode("utf-8") in frameToDelete:
+                    del audiofile.tag.frame_set[fid]
+        audiofile.tag.save(version=(2,3,0))
+        audiofile.tag.save()
 
 def getJsonFromComment(audiofile):
     comment = audiofile.tag.comments[0].text
@@ -25,8 +35,8 @@ def getAudioFile(mp3File):
     except Exception as e:
         print ("- initializeMp3File: EXCEPTION " + str(e))
         print ("- initializing mp3 file for you")
-        audiofile.initTag()
-        saveAudioFile(audiofile)
+        #audiofile.initTag()
+        #saveAudioFile(audiofile)
     return audiofile
 
 def getArtistAndTitle(mp3JsonInfo):
@@ -135,9 +145,11 @@ def updateMp3WithMetadata(audiofile,metadata):
             cover = getITunesCoverBig(thisResponse)
             icon = getITunesCoverSmall(thisResponse)
             # https://eyed3.readthedocs.io/en/latest/eyed3.id3.html#eyed3.id3.frames.ImageFrame
-            #audiofile.tag.images.set(0, cover, 'image/jpg', u"othercover")            
-            audiofile.tag.images.set(3, cover, 'image/jpg', u"cover")            
-            audiofile.tag.images.set(1, icon, 'image/jpg', u"icon")            
+            #audiofile.tag.images.set(0, cover, 'image/jpg', u"othercover")
+            imageType = 3
+            audiofile.tag.images.set(imageType, cover, 'image/jpg', getImageDescriptionForType(imageType))            
+            imageType = 1
+            audiofile.tag.images.set(imageType, icon, 'image/jpg', getImageDescriptionForType(imageType))            
             #audiofile.tag.images.set(2, icon, 'image/jpg', u"othericon")            
             
             saveAudioFile(audiofile)
@@ -162,17 +174,21 @@ def updateMp3WithMetadata(audiofile,metadata):
                     releaseId = thisResponse["release-list"][0]["id"]
                     cover = getMusicbrainzCover(releaseId,"cover")
                     if cover is not None:
-                        audiofile.tag.images.set(3, cover, 'image/jpg', u"cover")            
+                        imageType = 3
+                        audiofile.tag.images.set(imageType, cover, 'image/jpg', getImageDescriptionForType(imageType))            
                     cover = getMusicbrainzCover(releaseId,"icon")
                     if cover is not None:
-                        audiofile.tag.images.set(1, cover, 'image/jpg', u"icon")            
+                        imageType = 1
+                        audiofile.tag.images.set(imageType, cover, 'image/jpg', getImageDescriptionForType(imageType))            
 
                 if ('medium-list' in thisResponse["release-list"][0]):
                     if len(thisResponse["release-list"][0]["medium-list"]) > 0:
                         entryMediumList = thisResponse["release-list"][0]["medium-list"]
                         if 'track-list' in entryMediumList[0] and len(entryMediumList[0]["track-list"]) > 0:
-                            audiofile.tag.track = entryMediumList[0]["track-list"][0]["number"]
-                            audiofile.tag.trackTimeMillis = entryMediumList[0]["track-list"][0]["length"]
+                            if "number" in entryMediumList[0]["track-list"][0]:
+                                audiofile.tag.track = entryMediumList[0]["track-list"][0]["number"]
+                            if "length" in entryMediumList[0]["track-list"][0]:
+                                audiofile.tag.trackTimeMillis = entryMediumList[0]["track-list"][0]["length"]
 
                 if ('medium-track-count' in thisResponse["release-list"][0]):
                     audiofile.tag.track_total = thisResponse["release-list"][0]["medium-track-count"] 
@@ -197,9 +213,59 @@ def updateMp3WithMetadata(audiofile,metadata):
 
 
 def addNameToImageIfMissing(audiofile):
+    description = "dummy text for image"
+    title = audiofile.tag.title
+    artist = audiofile.tag.artist
 
     for image in audiofile.tag.images:
-        type = image.type
-        description = image.description
-        print(audiofile.path + ": >" + str(type) + "< - >" + str(description) + "<")
+        description = getImageDescriptionForType(image.picture_type)
+        # from https://stackoverflow.com/questions/40515738/using-eyed3-to-embed-album-art-from-url
+        audiofile.tag.images.set(type_=image.picture_type, img_data=image.image_data, mime_type=image.mime_type, description=description)
+        #print(audiofile.path + ": >" + str(type) + "< - >" + str(description) + "<")
+    saveAudioFile(audiofile)
 
+
+def getImageDescriptionForType(type):
+    description = "dummy"
+    if type == 8:
+        description = "artist"
+    if type == 4:
+        description = "back_cover"
+    if type == 10:
+        description = "band"
+    if type == 19:
+        description = "band_logo"
+    if type == 17:
+        description = "fish"
+    if type == 11:
+        description = "composer"
+    if type == 9:
+        description = "conductor"
+    if type == 15:
+        description = "during_performance"
+    if type == 14:
+        description = "during_recording"
+    if type == 3:
+        description = "front_cover"
+    if type == 1:
+        description = "icon"
+    if type == 18:
+        description = "illustration"
+    if type == 7:
+        description = "lead_artist"
+    if type == 5:
+        description = "leaflet"
+    if type == 12:
+        description = "lyricist"
+    if type == 20:
+        description = "publisher_logo"
+    if type == 6:
+        description = "media"
+    if type == 0:
+        description = "other"
+    if type == 2:
+        description = "other_icon"
+    if type == 13:
+        description = "recording_location"
+
+    return description

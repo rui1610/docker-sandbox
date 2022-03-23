@@ -81,6 +81,7 @@ def checkIfGoodResult(searchString, artist, title):
 
     return result
 
+
 def mp3ToBeUpdated(mp3File):
     toBeUpdated = False
     audiofile = getAudioFile(mp3File)
@@ -147,7 +148,7 @@ def moveFile(audiofile, sourceFile):
 
         if (DELETESOURCEFILES == True):
             os.remove(sourceFile)
-            print ("- moveFile: moved file from " + sourceFile + " to " + newFilename)
+            print ("- moveFile: moved file to " + newFilename)
     except Exception as e:
         print ("- moveFile: EXCEPTION " + str(e))
         audiofile = None

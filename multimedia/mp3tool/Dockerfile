@@ -1,5 +1,5 @@
 FROM python:3.10-alpine
-ENV HOME_FOLDER /mp3metadatafetcher
+ENV HOME_FOLDER /mp3tool
 WORKDIR $HOME_FOLDER
 
 COPY multimedia/mp3tool/requirements.txt /tmp/pip-tmp/

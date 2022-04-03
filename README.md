@@ -1,4 +1,4 @@
-[![Build docker images](https://github.com/rui1610/docker-sandbox/actions/workflows/mp3metadatafetcher.yml/badge.svg)](https://github.com/rui1610/docker-sandbox/actions/workflows/mp3metadatafetcher.yml)
+[![Build docker images](https://github.com/rui1610/docker-sandbox/actions/workflows/mp3tool.yml/badge.svg)](https://github.com/rui1610/docker-sandbox/actions/workflows/mp3tool.yml)
 
 # docker-sandbox
 

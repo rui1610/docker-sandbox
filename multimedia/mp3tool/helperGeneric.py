@@ -5,7 +5,7 @@ from shutil import copyfile
 
 from helperEyed3 import getAudioFile
 DELETESOURCEFILES = True
-FOLDERDESTINATION = "output"
+FOLDERDESTINATION = "/mp3tool/output"
 
 def cleanUpText(text):
 

@@ -13,17 +13,18 @@ jobs:
       runs-on: ubuntu-latest
       if: github.event_name == 'push'
       steps:
+
       - uses: actions/checkout@v2
-      
-      - name: Build the Docker image for the mp3tool
-        run: docker build . --file ./multimedia/mp3tool/Dockerfile --tag mp3tool
+
+      - name: Build the Docker image for the picturetool
+        run: docker build . --file ./multimedia/picturetool/Dockerfile --tag picturetool
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Push image mp3tool
+      - name: Push image picturetool
         run: |
-          IMAGE_NAME=mp3tool
+          IMAGE_NAME=picturetool
           IMAGE_ID=ghcr.io/${{ github.repository }}/$IMAGE_NAME
 
           # Change all uppercase to lowercase

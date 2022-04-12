@@ -1,5 +1,4 @@
-name: Build docker images
-
+name: Build docker image mp3tool 
 
 on:
   release:
@@ -14,7 +13,7 @@ jobs:
       if: github.event_name == 'push'
       steps:
       - uses: actions/checkout@v2
-      
+
       - name: Build the Docker image for the mp3tool
         run: docker build . --file ./multimedia/mp3tool/Dockerfile --tag mp3tool
 

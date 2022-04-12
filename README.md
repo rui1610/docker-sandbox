@@ -1,5 +1,4 @@
-[![Build docker image picturetool](https://github.com/rui1610/docker-sandbox/actions/workflows/picturetool.yml/badge.svg)](https://github.com/rui1610/docker-sandbox/actions/workflows/picturetool.yml)
-[![Build docker image mp3tool](https://github.com/rui1610/docker-sandbox/actions/workflows/mp3tool.yml/badge.svg)](https://github.com/rui1610/docker-sandbox/actions/workflows/mp3tool.yml)
+[![Build docker image mp3tool](https://github.com/rui1610/docker-sandbox/actions/workflows/mp3tool.yml/badge.svg)](https://github.com/rui1610/docker-sandbox/actions/workflows/mp3tool.yml) [![Build docker image picturetool](https://github.com/rui1610/docker-sandbox/actions/workflows/picturetool.yml/badge.svg)](https://github.com/rui1610/docker-sandbox/actions/workflows/picturetool.yml)
 
 # docker-sandbox
 

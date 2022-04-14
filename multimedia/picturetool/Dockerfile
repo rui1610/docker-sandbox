@@ -17,8 +17,8 @@ RUN apk add --update --no-cache --virtual .tmp \
     && apk add bash fdupes exiftool imagemagick ffmpeg\
     && rm -r /tmp/* \
     && rm -rf /var/cache/apk/* \
-    && mkdir -p $HOME_FOLDER/source \
-    && mkdir -p $HOME_FOLDER/target \
+    && mkdir -p $HOME_FOLDER/input \
+    && mkdir -p $HOME_FOLDER/output \
     && mkdir -p $HOME_FOLDER/temp \
     && cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 

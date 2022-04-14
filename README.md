@@ -6,7 +6,7 @@ Various tools to experiment with docker.
 
 ## mp3tool
 
-Adds several metadata to mp3 files. 
+Adds several metadata to mp3 files.
 
 Mount your local folder with the mp3 files you want to convert and map it to the image folder `/mp3tool/input`.
 Do the same for the target folder on your local storage with the image folder `/mp3tool/output`.
@@ -15,4 +15,9 @@ When starting the container the tool will start it's work immediately and all th
 
 ## picturetool
 
-TBD
+Sorts pictures by their recording date into respective folders.
+
+Mount your local folder with the picture files you want to convert and map it to the image folder `/picturetool/input`.
+Do the same for the target folder on your local storage with the image folder `/picturetool/output`.
+
+When starting the container the tool will start it's work immediately and all the files will be moved to the folder `/picturetool/output` with their corresponding date.

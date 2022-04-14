@@ -12,8 +12,8 @@ from exif import Image
 import piexif
 import mutagen
 
-sourceFolder = "/picturetool/source"
-targetFolder = "/picturetool/target"
+sourceFolder = "/picturetool/input"
+targetFolder = "/picturetool/output"
 DEFAULTDATE="AUTO"
 FIXEDDATE=None
 

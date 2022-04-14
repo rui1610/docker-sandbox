@@ -12,7 +12,7 @@ from GPSPhoto import gpsphoto
 import dateutil.parser as parser
 from PIL import Image
 
-sourceFolder = "/picturetool/target"
+sourceFolder = "/picturetool/input"
 
 # https://pypi.org/project/gpsphoto/
 def get_gps_location(filename):

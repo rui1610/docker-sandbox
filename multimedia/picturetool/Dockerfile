@@ -13,7 +13,7 @@ RUN apk add --update --no-cache --virtual .tmp \
                 zlib-dev  \
     && pip install -r /tmp/pip-tmp/requirements.txt \
     && rm -rf /tmp/pip-tmp \
-    && apk del .tmp gcc libc-dev linux-headers jpeg-dev zlib-dev \
+    && apk del .tmp gcc libc-dev linux-headers jpeg-dev zlib-dev libraw \
     && apk add bash fdupes exiftool imagemagick ffmpeg\
     && rm -r /tmp/* \
     && rm -rf /var/cache/apk/* \

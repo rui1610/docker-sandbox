@@ -42,6 +42,7 @@ def cleanupFilenameForSearch(audiofile, filename):
     filenameBase = os.path.splitext(filenameOnly)[0]
     text = filenameBase.replace("_","-")
 
+    text = filenameBase.replace("[INIT]","")
     #text = cleanUpText(filenameBase)
 
     text = specialCleanUpForArtist(text,",")

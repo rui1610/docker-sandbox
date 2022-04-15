@@ -25,7 +25,16 @@ def getJsonFromComment(audiofile):
     thisComment = comment.decode("utf-8")
     return convertStringToJson(thisComment)
 
+def initAudioFile(mp3File):
+    if "[INIT]" in mp3File:
+        audiofile = eyed3.load(mp3File)
+        if (audiofile.tag == None):
+            audiofile.initTag()
+            saveAudioFile(audiofile)
+
+
 def getAudioFile(mp3File):
+    initAudioFile(mp3File)
     audiofile = None
     try:
         audiofile = eyed3.load(mp3File)
@@ -34,9 +43,7 @@ def getAudioFile(mp3File):
             saveAudioFile(audiofile)
     except Exception as e:
         print ("- initializeMp3File: EXCEPTION " + str(e))
-        print ("- initializing mp3 file for you")
-        #audiofile.initTag()
-        #saveAudioFile(audiofile)
+
     return audiofile
 
 def getArtistAndTitle(mp3JsonInfo):

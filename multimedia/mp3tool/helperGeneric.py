@@ -1,3 +1,4 @@
+from email.mime import audio
 import os
 import re
 import unidecode
@@ -92,7 +93,6 @@ def mp3ToBeUpdated(mp3File):
         artist = audiofile.tag.artist
         title = audiofile.tag.title
         counter = len(  audiofile.tag.images )
-        lyrics = audiofile.tag.lyrics
 
         if artist is None or artist == "":
             toBeUpdated = True
@@ -100,14 +100,18 @@ def mp3ToBeUpdated(mp3File):
         if title is None or title == "":
             toBeUpdated = True
 
-        if lyrics is None or lyrics == "":
-            toBeUpdated = True
-
         if counter == 0:
             toBeUpdated = True
 
     return toBeUpdated
 
+def hasLyrics(audiofile):
+    hasLyrics = False
+    for lyric in audiofile.tag.lyrics:
+        text = lyric.text
+        if text is not None and len(text) > 0:
+            hasLyrics = True
+    return hasLyrics
 
 #################################################################
 def moveFile(audiofile, sourceFile):
@@ -115,7 +119,7 @@ def moveFile(audiofile, sourceFile):
     #audiofile = cleanupAudiofileArtistTitle(audiofile)
     artist = audiofile.tag.artist
     title = audiofile.tag.title
-    lyrics = audiofile.tag.lyrics
+    fileHasLyrics = hasLyrics(audiofile)
     counterImages = len(  audiofile.tag.images )
 
     filenameOnly = os.path.basename(sourceFile)
@@ -133,10 +137,11 @@ def moveFile(audiofile, sourceFile):
     newFilename = None
     if counterImages > 0:
         folderDestinationNew = FOLDERDESTINATION + "/ready/" + artist + "/"
-        if lyrics is not None and lyrics != "":
-            newFilename = folderDestinationNew + artist + " - " + title + " (with lyrics).mp3"
-        else:
-            newFilename = folderDestinationNew + artist + " - " + title + ".mp3"
+        #if fileHasLyrics is False:
+        #    newFilename = FOLDERDESTINATION + "/noLyricsFound/" + artist + " - " + title + ".mp3"
+        #else:
+        newFilename = folderDestinationNew + artist + " - " + title + ".mp3"
+
     else:
         folderDestinationNew = FOLDERDESTINATION + "/noCoverImageFound/"        
         newFilename = folderDestinationNew + filenameOnly

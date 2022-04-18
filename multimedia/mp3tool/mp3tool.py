@@ -2,10 +2,10 @@ import os
 import fnmatch
 import os
 from helperEyed3 import getAudioFile, getJsonFromComment, updateMp3WithMetadata
-from helperGeneric import cleanupFilenameForSearch, mp3ToBeUpdated
+from helperGeneric import cleanupFilenameForSearch, hasLyrics, mp3ToBeUpdated
 from helperItunes import getMetadataFromItunes
 from helperJson import addKeyValuePair, saveJsonToFile
-from helperLyrics import addLyrics
+from helperLyrics import addLyrics, deleteLyricsIfContainingHtmlTags
 
 
 from shutil import copyfile
@@ -48,27 +48,30 @@ def addMetadataToFiles():
                 else:
                     audiofile = getAudioFile(mp3filenameFullpath)
                     addNameToImageIfMissing(audiofile)
+                    if hasLyrics(audiofile) is False:
+                        addLyrics(audiofile)
                     moveFile(audiofile,mp3filenameFullpath)
-
 
 
     for file in allFiles:
         filename = file["file"]
         print("- " + filename)
         audiofile = getAudioFile(filename)
-        searchString = cleanupFilenameForSearch(audiofile, filename)
-        if "metadataitunes" not in file or file["metadataitunes"] is None:
-            thisResult = getMetadataFromItunes(searchString)
-            addKeyValuePair(file,"metadataitunes", thisResult)
-        if "metadatamusicbrainzngs" not in file or file["metadatamusicbrainzngs"] is None:
-            thisResult = getMetadataFromMusicbrainzngs(searchString)
-            addKeyValuePair(file,"metadatamusicbrainzngs", thisResult)
-        updateMp3WithMetadata(audiofile,file)
-        addLyrics(audiofile)
-        #addNameToImageIfMissing(audiofile)
-        moveFile(audiofile,filename)
+        if audiofile is not None:
+            searchString = cleanupFilenameForSearch(audiofile, filename)
+            if "metadataitunes" not in file or file["metadataitunes"] is None:
+                thisResult = getMetadataFromItunes(searchString)
+                addKeyValuePair(file,"metadataitunes", thisResult)
+            if "metadatamusicbrainzngs" not in file or file["metadatamusicbrainzngs"] is None:
+                thisResult = getMetadataFromMusicbrainzngs(searchString)
+                addKeyValuePair(file,"metadatamusicbrainzngs", thisResult)
+            updateMp3WithMetadata(audiofile,file)
+            addLyrics(audiofile)
+            #addNameToImageIfMissing(audiofile)
+            moveFile(audiofile,filename)
 
     cleanUpFolders()
 
+cleanUpFolders()
 
 addMetadataToFiles()

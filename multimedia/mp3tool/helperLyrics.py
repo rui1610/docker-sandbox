@@ -1,7 +1,15 @@
 import requests
 import re
-
+import os
+import time
+from lyricsgenius import Genius
 from helperEyed3 import saveAudioFile
+
+GENIUS_ACCESS_TOKEN = os.getenv('GENIUS_ACCESS_TOKEN')
+genius = Genius(GENIUS_ACCESS_TOKEN)
+genius.excluded_terms = ["(Remix)", "(Live)", "(OST)", "instrumental", "not set", "Hans Zimmer"]
+genius.remove_section_headers = True
+genius.skip_non_songs = True
 
 def getPageContent(url):
 
@@ -36,8 +44,8 @@ def getLyricsFromUrlContent(content):
     result = None
 
     findStart = "<!-- Usage of azlyrics.com content by any third-party lyrics provider is prohibited by our licensing agreement. Sorry about that. -->"
-    if findStart > 0:
-        startLyrics = content.find(findStart) + len(findStart)
+    startLyrics = content.find(findStart) + len(findStart)
+    if startLyrics > len(findStart):
         lyricsText = content[startLyrics:]
         findEnd = "</div>"
         endLyrics = lyricsText.find(findEnd) 
@@ -50,21 +58,52 @@ def getLyricsFromUrlContent(content):
 
 def deleteLyricsIfContainingHtmlTags(audiofile):
     lyrics = audiofile.tag.lyrics
+    
+    tagsToCheck = ["</title>", "</script>", "</head>"]
 
+    htmlFound = False
     for lyric in lyrics:
-        print (lyric)
+        text = lyric.text
+
+        for tag in tagsToCheck:
+            if tag in text:
+                htmlFound = True
+
+        if htmlFound == True:
+            audiofile.tag.lyrics.set("")
+            saveAudioFile(audiofile)
 
 
 def addLyrics(audiofile):
 
-    deleteLyricsIfContainingHtmlTags(audiofile)
+    lyrics = getLyricsFromGenius(audiofile)
 
-    url = prepareSearchUrl(audiofile)
-    content = getPageContent(url)
-    lyrics = getLyricsFromUrlContent(content)
     if lyrics is not None:
         audiofile.tag.lyrics.set('"' + lyrics + '"')
         saveAudioFile(audiofile)
+    else:
+        deleteLyricsIfContainingHtmlTags(audiofile)
+
+        url = prepareSearchUrl(audiofile)
+        content = getPageContent(url)
+        lyrics = getLyricsFromUrlContent(content)
+        if lyrics is not None:
+            audiofile.tag.lyrics.set('"' + lyrics + '"')
+            saveAudioFile(audiofile)
 
 
+def getLyricsFromGenius(audiofile):
+    if GENIUS_ACCESS_TOKEN is None or GENIUS_ACCESS_TOKEN == "":
+        print("Missing GENIUS_ACCESS_TOKEN as env variable. Skipping search for lyrics on genius API.")
+        return None
 
+    try:
+        song = genius.search_song(audiofile.tag.title, audiofile.tag.artist)
+
+        if song is not None:
+            return song.lyrics
+        else:
+            return None
+    except Exception as e:
+        print("WARNING: Timeout execption on genius API. No lyrics collected: " + str(e))
+        return None

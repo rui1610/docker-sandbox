@@ -92,11 +92,15 @@ def mp3ToBeUpdated(mp3File):
         artist = audiofile.tag.artist
         title = audiofile.tag.title
         counter = len(  audiofile.tag.images )
+        lyrics = audiofile.tag.lyrics
 
         if artist is None or artist == "":
             toBeUpdated = True
         
         if title is None or title == "":
+            toBeUpdated = True
+
+        if lyrics is None or lyrics == "":
             toBeUpdated = True
 
         if counter == 0:
@@ -111,6 +115,7 @@ def moveFile(audiofile, sourceFile):
     #audiofile = cleanupAudiofileArtistTitle(audiofile)
     artist = audiofile.tag.artist
     title = audiofile.tag.title
+    lyrics = audiofile.tag.lyrics
     counterImages = len(  audiofile.tag.images )
 
     filenameOnly = os.path.basename(sourceFile)
@@ -128,7 +133,10 @@ def moveFile(audiofile, sourceFile):
     newFilename = None
     if counterImages > 0:
         folderDestinationNew = FOLDERDESTINATION + "/ready/" + artist + "/"
-        newFilename = folderDestinationNew + artist + " - " + title + ".mp3"
+        if lyrics is not None and lyrics != "":
+            newFilename = folderDestinationNew + artist + " - " + title + " (with lyrics).mp3"
+        else:
+            newFilename = folderDestinationNew + artist + " - " + title + ".mp3"
     else:
         folderDestinationNew = FOLDERDESTINATION + "/noCoverImageFound/"        
         newFilename = folderDestinationNew + filenameOnly

@@ -5,6 +5,7 @@ from helperEyed3 import getAudioFile, getJsonFromComment, updateMp3WithMetadata
 from helperGeneric import cleanupFilenameForSearch, mp3ToBeUpdated
 from helperItunes import getMetadataFromItunes
 from helperJson import addKeyValuePair, saveJsonToFile
+from helperLyrics import addLyrics
 
 
 from shutil import copyfile
@@ -50,6 +51,7 @@ def addMetadataToFiles():
                     moveFile(audiofile,mp3filenameFullpath)
 
 
+
     for file in allFiles:
         filename = file["file"]
         print("- " + filename)
@@ -62,6 +64,7 @@ def addMetadataToFiles():
             thisResult = getMetadataFromMusicbrainzngs(searchString)
             addKeyValuePair(file,"metadatamusicbrainzngs", thisResult)
         updateMp3WithMetadata(audiofile,file)
+        addLyrics(audiofile)
         #addNameToImageIfMissing(audiofile)
         moveFile(audiofile,filename)
 

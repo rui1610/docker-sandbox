@@ -18,5 +18,5 @@ RUN  apk add  --no-cache --virtual .tmp gcc libc-dev linux-headers jpeg-dev zlib
 COPY multimedia/mp3tool/mp3tool.py $HOME_FOLDER
 COPY multimedia/mp3tool/helper*.py $HOME_FOLDER/
 
-ENTRYPOINT ["python","mp3tool.py"]
-#CMD ["bash"]
+#ENTRYPOINT ["python","mp3tool.py"]
+CMD ["bash"]

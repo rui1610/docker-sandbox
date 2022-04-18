@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+inputFolder=/Users/d045023/Desktop/temp/multimedia/youtube-dl/audio
+outputFolder=/Users/d045023/Desktop/temp/multimedia/youtube-dl/converted
+
+docker image build -t mp3tool:latest -f "multimedia/mp3tool/Dockerfile"  .
+
+docker container run --rm  -it -d --name "mp3tool" \
+                        --mount type=bind,source="${inputFolder}/",target="/mp3tool/input" \
+                        --mount type=bind,source="${outputFolder}/",target="/mp3tool/output" \
+                        "mp3tool:latest"

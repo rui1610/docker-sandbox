@@ -42,11 +42,11 @@ def addMetadataToFiles():
 
                 needsUpdate = metadataMissing(audiofile)
                 if needsUpdate is True:
-                    addMetadataFromGenius(audiofile)
+                    addMetadataFromItunes(audiofile, searchString)
 
                 needsUpdate = metadataMissing(audiofile)
                 if needsUpdate is True:
-                    addMetadataFromItunes(audiofile, searchString)
+                    addMetadataFromGenius(audiofile)
 
                 needsUpdate = metadataMissing(audiofile)
                 if needsUpdate is True:

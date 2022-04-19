@@ -8,8 +8,8 @@ from helperEyed3 import getImageDescriptionForType, saveAudioFile
 from helperGeneric import hasArtist, hasCover, hasLyrics, hasTitle
 
 GENIUS_ACCESS_TOKEN = os.getenv('GENIUS_ACCESS_TOKEN')
-genius = Genius("OFxKMm7EW9bRkeBhLyXqq8XztIGOmDamw7EszjjsFrk9pkasx_4YvhNVB_na6cuc")
-genius.excluded_terms = ["(Remix)", "(Live)", "(OST)", "instrumental", "not set", "Hans Zimmer"]
+genius = Genius(GENIUS_ACCESS_TOKEN)
+genius.excluded_terms = ["(Remix)", "(Live)"]
 genius.remove_section_headers = True
 genius.skip_non_songs = True
 

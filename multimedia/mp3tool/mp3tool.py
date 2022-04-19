@@ -1,16 +1,12 @@
 import os
 import fnmatch
 import os
-from helperEyed3 import getAudioFile, getJsonFromComment, updateMp3WithMetadata
-from helperGeneric import cleanupFilenameForSearch, hasLyrics, mp3ToBeUpdated
-from helperItunes import getMetadataFromItunes
-from helperJson import addKeyValuePair, saveJsonToFile
-from helperLyrics import addLyrics, deleteLyricsIfContainingHtmlTags
+from helperEyed3 import getAudioFile
+from helperGeneric import cleanupFilenameForSearch, metadataMissing
+from helperItunes import addMetadataFromItunes
+from helperLyrics import addMetadataFromGenius
+from helperMusicBrainzngs import addMetadataFromMusicbrainzngs
 
-
-from shutil import copyfile
-
-from helperMusicBrainzngs import getMetadataFromMusicbrainzngs
 from helperGeneric import moveFile
 from helperEyed3 import addNameToImageIfMissing
 
@@ -41,34 +37,23 @@ def addMetadataToFiles():
             if fnmatch.fnmatch(filename, "*.mp3"):
                 mp3filenameFullpath = folder + "/" + filename
                 print(mp3filenameFullpath)
-                toBeUpdated = mp3ToBeUpdated(mp3filenameFullpath)
-                if toBeUpdated == True:
-                    thisFile = {"file":mp3filenameFullpath}
-                    allFiles.append(thisFile)
-                else:
-                    audiofile = getAudioFile(mp3filenameFullpath)
-                    addNameToImageIfMissing(audiofile)
-                    if hasLyrics(audiofile) is False:
-                        addLyrics(audiofile)
-                    moveFile(audiofile,mp3filenameFullpath)
+                audiofile = getAudioFile(mp3filenameFullpath)
+                searchString = cleanupFilenameForSearch(audiofile, filename)
 
+                needsUpdate = metadataMissing(audiofile)
+                if needsUpdate is True:
+                    addMetadataFromGenius(audiofile)
 
-    for file in allFiles:
-        filename = file["file"]
-        print("- " + filename)
-        audiofile = getAudioFile(filename)
-        if audiofile is not None:
-            searchString = cleanupFilenameForSearch(audiofile, filename)
-            if "metadataitunes" not in file or file["metadataitunes"] is None:
-                thisResult = getMetadataFromItunes(searchString)
-                addKeyValuePair(file,"metadataitunes", thisResult)
-            if "metadatamusicbrainzngs" not in file or file["metadatamusicbrainzngs"] is None:
-                thisResult = getMetadataFromMusicbrainzngs(searchString)
-                addKeyValuePair(file,"metadatamusicbrainzngs", thisResult)
-            updateMp3WithMetadata(audiofile,file)
-            addLyrics(audiofile)
-            #addNameToImageIfMissing(audiofile)
-            moveFile(audiofile,filename)
+                needsUpdate = metadataMissing(audiofile)
+                if needsUpdate is True:
+                    addMetadataFromItunes(audiofile, searchString)
+
+                needsUpdate = metadataMissing(audiofile)
+                if needsUpdate is True:
+                    addMetadataFromMusicbrainzngs(audiofile, searchString)
+
+                addNameToImageIfMissing(audiofile)
+                moveFile(audiofile,mp3filenameFullpath)
 
     cleanUpFolders()
 

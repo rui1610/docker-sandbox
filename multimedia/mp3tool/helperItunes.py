@@ -2,6 +2,7 @@ from distutils.util import split_quoted
 import time
 import requests
 import urllib.parse
+from helperEyed3 import getITunesCoverBig, getITunesCoverSmall, getImageDescriptionForType, saveAudioFile
 
 from helperGeneric import checkIfGoodResult
 
@@ -54,3 +55,56 @@ def getMetadataFromItunes(searchString):
             result.append(thisResponse)
 
     return result
+
+def addMetadataFromItunes(audiofile, searchString):
+
+    myData = getMetadataFromItunes(searchString)
+    if myData is not None and len(myData) > 0:
+
+        thisResponse = myData[0]
+
+        audiofile.tag.artist = thisResponse["artistName"]
+        audiofile.tag.title  = thisResponse["trackName"]
+
+        if ('collectionName' in thisResponse):
+            audiofile.tag.album = thisResponse['collectionName'] 
+
+        if ('trackNumber' in thisResponse):
+            audiofile.tag.track = thisResponse['trackNumber'] 
+
+        if ('trackCount' in thisResponse):
+            audiofile.tag.track_total = thisResponse['trackCount'] 
+
+        if ('discCount' in thisResponse):
+            audiofile.tag.disc = thisResponse['discCount'] 
+
+        if ('releaseDate' in thisResponse):
+            audiofile.tag.releaseDate = thisResponse['releaseDate']
+        if ('artistViewUrl' in thisResponse):
+            audiofile.tag.artistViewUrl = thisResponse['artistViewUrl']
+
+        if ('collectionViewUrl' in thisResponse):
+            audiofile.tag.collectionViewUrl = thisResponse['collectionViewUrl']
+
+        if ('trackTimeMillis' in thisResponse):
+            audiofile.tag.trackTimeMillis = thisResponse['trackTimeMillis']
+
+        if ('primaryGenreName' in thisResponse):
+            audiofile.tag.primaryGenreName= thisResponse['primaryGenreName']
+            audiofile.tag.genre = thisResponse['primaryGenreName']        
+        
+        #comment = {"itunes-trackid" :  thisResponse['trackId'],"itunes-collectionid": thisResponse['collectionId'],"itunes-previewurl":thisResponse['previewUrl']}
+        #thisComment = str(dictToString(comment).encode("utf-8"))
+        audiofile.tag.comments.set("")
+
+        cover = getITunesCoverBig(thisResponse)
+        icon = getITunesCoverSmall(thisResponse)
+        # https://eyed3.readthedocs.io/en/latest/eyed3.id3.html#eyed3.id3.frames.ImageFrame
+        #audiofile.tag.images.set(0, cover, 'image/jpg', u"othercover")
+        imageType = 3
+        audiofile.tag.images.set(imageType, cover, 'image/jpg', getImageDescriptionForType(imageType))            
+        imageType = 1
+        audiofile.tag.images.set(imageType, icon, 'image/jpg', getImageDescriptionForType(imageType))            
+        #audiofile.tag.images.set(2, icon, 'image/jpg', u"othericon")            
+        
+        saveAudioFile(audiofile)

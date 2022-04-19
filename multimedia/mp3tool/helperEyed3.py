@@ -110,119 +110,119 @@ def getMusicbrainzCover(releaseId,type):
         print ("   >> " + str(e))
         return None
 
-def updateMp3WithMetadata(audiofile,metadata):
+# def updateMp3WithMetadata(audiofile,metadata):
 
-    if audiofile is not None:
-        if "metadataitunes" in metadata or "metadatamusicbrainzngs" in metadata:
-            #thisJson = convertStringToJson(comment)
+#     if audiofile is not None:
+#         if "metadataitunes" in metadata or "metadatamusicbrainzngs" in metadata:
+#             #thisJson = convertStringToJson(comment)
 
-            if "metadataitunes" in metadata and len(metadata["metadataitunes"]) > 0:
-                myData = metadata["metadataitunes"]
-                # Just take the first response and send it back
-                thisResponse = myData[0]
+#             if "metadataitunes" in metadata and len(metadata["metadataitunes"]) > 0:
+#                 myData = metadata["metadataitunes"]
+#                 # Just take the first response and send it back
+#                 thisResponse = myData[0]
 
-                audiofile.tag.artist = thisResponse["artistName"]
-                audiofile.tag.title  = thisResponse["trackName"]
+#                 audiofile.tag.artist = thisResponse["artistName"]
+#                 audiofile.tag.title  = thisResponse["trackName"]
 
-                if ('collectionName' in thisResponse):
-                    audiofile.tag.album = thisResponse['collectionName'] 
+#                 if ('collectionName' in thisResponse):
+#                     audiofile.tag.album = thisResponse['collectionName'] 
 
-                if ('trackNumber' in thisResponse):
-                    audiofile.tag.track = thisResponse['trackNumber'] 
+#                 if ('trackNumber' in thisResponse):
+#                     audiofile.tag.track = thisResponse['trackNumber'] 
 
-                if ('trackCount' in thisResponse):
-                    audiofile.tag.track_total = thisResponse['trackCount'] 
+#                 if ('trackCount' in thisResponse):
+#                     audiofile.tag.track_total = thisResponse['trackCount'] 
 
-                if ('discCount' in thisResponse):
-                    audiofile.tag.disc = thisResponse['discCount'] 
+#                 if ('discCount' in thisResponse):
+#                     audiofile.tag.disc = thisResponse['discCount'] 
 
-                if ('releaseDate' in thisResponse):
-                    audiofile.tag.releaseDate = thisResponse['releaseDate']
-                if ('artistViewUrl' in thisResponse):
-                    audiofile.tag.artistViewUrl = thisResponse['artistViewUrl']
+#                 if ('releaseDate' in thisResponse):
+#                     audiofile.tag.releaseDate = thisResponse['releaseDate']
+#                 if ('artistViewUrl' in thisResponse):
+#                     audiofile.tag.artistViewUrl = thisResponse['artistViewUrl']
 
-                if ('collectionViewUrl' in thisResponse):
-                    audiofile.tag.collectionViewUrl = thisResponse['collectionViewUrl']
+#                 if ('collectionViewUrl' in thisResponse):
+#                     audiofile.tag.collectionViewUrl = thisResponse['collectionViewUrl']
 
-                if ('trackTimeMillis' in thisResponse):
-                    audiofile.tag.trackTimeMillis = thisResponse['trackTimeMillis']
+#                 if ('trackTimeMillis' in thisResponse):
+#                     audiofile.tag.trackTimeMillis = thisResponse['trackTimeMillis']
 
-                if ('primaryGenreName' in thisResponse):
-                    audiofile.tag.primaryGenreName= thisResponse['primaryGenreName']
-                    audiofile.tag.genre = thisResponse['primaryGenreName']        
+#                 if ('primaryGenreName' in thisResponse):
+#                     audiofile.tag.primaryGenreName= thisResponse['primaryGenreName']
+#                     audiofile.tag.genre = thisResponse['primaryGenreName']        
                 
-                #comment = {"itunes-trackid" :  thisResponse['trackId'],"itunes-collectionid": thisResponse['collectionId'],"itunes-previewurl":thisResponse['previewUrl']}
-                #thisComment = str(dictToString(comment).encode("utf-8"))
-                audiofile.tag.comments.set("")
+#                 #comment = {"itunes-trackid" :  thisResponse['trackId'],"itunes-collectionid": thisResponse['collectionId'],"itunes-previewurl":thisResponse['previewUrl']}
+#                 #thisComment = str(dictToString(comment).encode("utf-8"))
+#                 audiofile.tag.comments.set("")
 
-                cover = getITunesCoverBig(thisResponse)
-                icon = getITunesCoverSmall(thisResponse)
-                # https://eyed3.readthedocs.io/en/latest/eyed3.id3.html#eyed3.id3.frames.ImageFrame
-                #audiofile.tag.images.set(0, cover, 'image/jpg', u"othercover")
-                imageType = 3
-                audiofile.tag.images.set(imageType, cover, 'image/jpg', getImageDescriptionForType(imageType))            
-                imageType = 1
-                audiofile.tag.images.set(imageType, icon, 'image/jpg', getImageDescriptionForType(imageType))            
-                #audiofile.tag.images.set(2, icon, 'image/jpg', u"othericon")            
+#                 cover = getITunesCoverBig(thisResponse)
+#                 icon = getITunesCoverSmall(thisResponse)
+#                 # https://eyed3.readthedocs.io/en/latest/eyed3.id3.html#eyed3.id3.frames.ImageFrame
+#                 #audiofile.tag.images.set(0, cover, 'image/jpg', u"othercover")
+#                 imageType = 3
+#                 audiofile.tag.images.set(imageType, cover, 'image/jpg', getImageDescriptionForType(imageType))            
+#                 imageType = 1
+#                 audiofile.tag.images.set(imageType, icon, 'image/jpg', getImageDescriptionForType(imageType))            
+#                 #audiofile.tag.images.set(2, icon, 'image/jpg', u"othericon")            
                 
-                saveAudioFile(audiofile)
-                return True
+#                 saveAudioFile(audiofile)
+#                 return True
 
-            if "metadatamusicbrainzngs" in metadata and len(metadata["metadatamusicbrainzngs"]) > 0:
-                myData = metadata["metadatamusicbrainzngs"]
-                # Just take the first response and send it back
-                thisResponse = myData[0]
+#             if "metadatamusicbrainzngs" in metadata and len(metadata["metadatamusicbrainzngs"]) > 0:
+#                 myData = metadata["metadatamusicbrainzngs"]
+#                 # Just take the first response and send it back
+#                 thisResponse = myData[0]
 
-                audiofile.tag.artist = thisResponse["artist-credit-phrase"]
-                audiofile.tag.title  = thisResponse["title"]
+#                 audiofile.tag.artist = thisResponse["artist-credit-phrase"]
+#                 audiofile.tag.title  = thisResponse["title"]
 
-                releaseId = None
+#                 releaseId = None
 
-                if ('release-list' in thisResponse and len(thisResponse["release-list"]) > 0):
-                    audiofile.tag.album = thisResponse["release-list"][0]["title"]
+#                 if ('release-list' in thisResponse and len(thisResponse["release-list"]) > 0):
+#                     audiofile.tag.album = thisResponse["release-list"][0]["title"]
 
-                    if ('date' in thisResponse["release-list"][0]):
-                        audiofile.tag.releaseDate = thisResponse["release-list"][0]["date"]
-                    if ('id' in thisResponse["release-list"][0]):
-                        releaseId = thisResponse["release-list"][0]["id"]
-                        cover = getMusicbrainzCover(releaseId,"cover")
-                        if cover is not None:
-                            imageType = 3
-                            audiofile.tag.images.set(imageType, cover, 'image/jpg', getImageDescriptionForType(imageType))            
-                        cover = getMusicbrainzCover(releaseId,"icon")
-                        if cover is not None:
-                            imageType = 1
-                            audiofile.tag.images.set(imageType, cover, 'image/jpg', getImageDescriptionForType(imageType))            
+#                     if ('date' in thisResponse["release-list"][0]):
+#                         audiofile.tag.releaseDate = thisResponse["release-list"][0]["date"]
+#                     if ('id' in thisResponse["release-list"][0]):
+#                         releaseId = thisResponse["release-list"][0]["id"]
+#                         cover = getMusicbrainzCover(releaseId,"cover")
+#                         if cover is not None:
+#                             imageType = 3
+#                             audiofile.tag.images.set(imageType, cover, 'image/jpg', getImageDescriptionForType(imageType))            
+#                         cover = getMusicbrainzCover(releaseId,"icon")
+#                         if cover is not None:
+#                             imageType = 1
+#                             audiofile.tag.images.set(imageType, cover, 'image/jpg', getImageDescriptionForType(imageType))            
 
-                    if ('medium-list' in thisResponse["release-list"][0]):
-                        if len(thisResponse["release-list"][0]["medium-list"]) > 0:
-                            entryMediumList = thisResponse["release-list"][0]["medium-list"]
-                            if 'track-list' in entryMediumList[0] and len(entryMediumList[0]["track-list"]) > 0:
-                                if "number" in entryMediumList[0]["track-list"][0]:
-                                    audiofile.tag.track = entryMediumList[0]["track-list"][0]["number"]
-                                if "length" in entryMediumList[0]["track-list"][0]:
-                                    audiofile.tag.trackTimeMillis = entryMediumList[0]["track-list"][0]["length"]
+#                     if ('medium-list' in thisResponse["release-list"][0]):
+#                         if len(thisResponse["release-list"][0]["medium-list"]) > 0:
+#                             entryMediumList = thisResponse["release-list"][0]["medium-list"]
+#                             if 'track-list' in entryMediumList[0] and len(entryMediumList[0]["track-list"]) > 0:
+#                                 if "number" in entryMediumList[0]["track-list"][0]:
+#                                     audiofile.tag.track = entryMediumList[0]["track-list"][0]["number"]
+#                                 if "length" in entryMediumList[0]["track-list"][0]:
+#                                     audiofile.tag.trackTimeMillis = entryMediumList[0]["track-list"][0]["length"]
 
-                    if ('medium-track-count' in thisResponse["release-list"][0]):
-                        audiofile.tag.track_total = thisResponse["release-list"][0]["medium-track-count"] 
+#                     if ('medium-track-count' in thisResponse["release-list"][0]):
+#                         audiofile.tag.track_total = thisResponse["release-list"][0]["medium-track-count"] 
 
-                    if ('medium-count' in thisResponse["release-list"][0]):
-                        audiofile.tag.disc = thisResponse["release-list"][0]["medium-count"] 
+#                     if ('medium-count' in thisResponse["release-list"][0]):
+#                         audiofile.tag.disc = thisResponse["release-list"][0]["medium-count"] 
 
-                if ('tag-list' in thisResponse):
-                    tags = thisResponse["tag-list"]
-                    primaryGenre = None
-                    maxCounter = 0
-                    for tag in tags:
-                        count = int(tag["count"])
-                        name = tag["name"]
-                        if count > maxCounter:
-                            primaryGenre = name
-                    if primaryGenre is not None:
-                        audiofile.tag.primaryGenreName= primaryGenre
-                        audiofile.tag.genre = primaryGenre    
-                saveAudioFile(audiofile)
-                return True
+#                 if ('tag-list' in thisResponse):
+#                     tags = thisResponse["tag-list"]
+#                     primaryGenre = None
+#                     maxCounter = 0
+#                     for tag in tags:
+#                         count = int(tag["count"])
+#                         name = tag["name"]
+#                         if count > maxCounter:
+#                             primaryGenre = name
+#                     if primaryGenre is not None:
+#                         audiofile.tag.primaryGenreName= primaryGenre
+#                         audiofile.tag.genre = primaryGenre    
+#                 saveAudioFile(audiofile)
+#                 return True
 
 
 def addNameToImageIfMissing(audiofile):

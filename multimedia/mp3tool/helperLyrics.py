@@ -1,12 +1,14 @@
+from curses import meta
 import requests
 import re
 import os
 import time
 from lyricsgenius import Genius
-from helperEyed3 import saveAudioFile
+from helperEyed3 import getImageDescriptionForType, saveAudioFile
+from helperGeneric import hasArtist, hasCover, hasLyrics, hasTitle
 
 GENIUS_ACCESS_TOKEN = os.getenv('GENIUS_ACCESS_TOKEN')
-genius = Genius(GENIUS_ACCESS_TOKEN)
+genius = Genius("OFxKMm7EW9bRkeBhLyXqq8XztIGOmDamw7EszjjsFrk9pkasx_4YvhNVB_na6cuc")
 genius.excluded_terms = ["(Remix)", "(Live)", "(OST)", "instrumental", "not set", "Hans Zimmer"]
 genius.remove_section_headers = True
 genius.skip_non_songs = True
@@ -92,18 +94,41 @@ def addLyrics(audiofile):
             saveAudioFile(audiofile)
 
 
-def getLyricsFromGenius(audiofile):
+def getSongInfoFromGenius(audiofile):
     if GENIUS_ACCESS_TOKEN is None or GENIUS_ACCESS_TOKEN == "":
         print("Missing GENIUS_ACCESS_TOKEN as env variable. Skipping search for lyrics on genius API.")
         return None
 
     try:
-        song = genius.search_song(audiofile.tag.title, audiofile.tag.artist)
+        song = genius.search_song(title=audiofile.tag.title, artist=audiofile.tag.artist, get_full_info=True)
 
         if song is not None:
-            return song.lyrics
+            return song
         else:
             return None
     except Exception as e:
         print("WARNING: Timeout execption on genius API. No lyrics collected: " + str(e))
-        return None
+        anotherTry = getSongInfoFromGenius(audiofile)
+
+        return anotherTry
+
+def addMetadataFromGenius(audiofile):
+
+    if hasArtist(audiofile) and hasTitle(audiofile):
+        if hasLyrics(audiofile) is False:
+            metadata = getSongInfoFromGenius(audiofile)
+            if metadata is not None:
+                lyrics = metadata.lyrics
+                audiofile.tag.lyrics.set('"' + lyrics + '"')
+        if hasCover(audiofile) is False:
+            metadata = getSongInfoFromGenius(audiofile)
+            if metadata is not None:
+                cover = requests.get(metadata.song_art_image_url, stream=True).raw.data
+                icon = requests.get(metadata.song_art_image_thumbnail_url, stream=True).raw.data
+                imageType = 3
+                audiofile.tag.images.set(imageType, cover, 'image/jpg', getImageDescriptionForType(imageType))            
+                imageType = 1
+                audiofile.tag.images.set(imageType, icon, 'image/jpg', getImageDescriptionForType(imageType))            
+        saveAudioFile(audiofile)
+
+

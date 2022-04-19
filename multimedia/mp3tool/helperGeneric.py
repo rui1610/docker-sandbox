@@ -83,27 +83,34 @@ def checkIfGoodResult(searchString, artist, title):
 
     return result
 
+def metadataMissing(audiofile):
+    result = True
 
-def mp3ToBeUpdated(mp3File):
-    toBeUpdated = False
-    audiofile = getAudioFile(mp3File)
-    if audiofile is None:
-        toBeUpdated = True
-    else:
-        artist = audiofile.tag.artist
-        title = audiofile.tag.title
-        counter = len(  audiofile.tag.images )
+    if hasCover(audiofile) and hasArtist(audiofile) and hasTitle(audiofile) and hasLyrics(audiofile):
+        result = False
 
-        if artist is None or artist == "":
-            toBeUpdated = True
-        
-        if title is None or title == "":
-            toBeUpdated = True
+    return result
 
-        if counter == 0:
-            toBeUpdated = True
+def hasArtist(audiofile):
+    hasInfo = False
+    info = audiofile.tag.artist
+    if info is not None or info != "":
+        hasInfo = True
+    return hasInfo
 
-    return toBeUpdated
+def hasCover(audiofile):
+    hasInfo = False
+    counter = len(audiofile.tag.images )
+    if counter > 0:
+        hasInfo = True
+    return hasInfo
+
+def hasTitle(audiofile):
+    hasInfo = False
+    info = audiofile.tag.title
+    if info is not None or info != "":
+        hasInfo = True
+    return hasInfo
 
 def hasLyrics(audiofile):
     hasLyrics = False
@@ -119,8 +126,7 @@ def moveFile(audiofile, sourceFile):
     #audiofile = cleanupAudiofileArtistTitle(audiofile)
     artist = audiofile.tag.artist
     title = audiofile.tag.title
-    fileHasLyrics = hasLyrics(audiofile)
-    counterImages = len(  audiofile.tag.images )
+    counterImages = len(audiofile.tag.images )
 
     filenameOnly = os.path.basename(sourceFile)
     filenameBase = os.path.splitext(filenameOnly)[0]
@@ -137,15 +143,11 @@ def moveFile(audiofile, sourceFile):
     newFilename = None
     if counterImages > 0:
         folderDestinationNew = FOLDERDESTINATION + "/ready/" + artist + "/"
-        #if fileHasLyrics is False:
-        #    newFilename = FOLDERDESTINATION + "/noLyricsFound/" + artist + " - " + title + ".mp3"
-        #else:
         newFilename = folderDestinationNew + artist + " - " + title + ".mp3"
 
     else:
         folderDestinationNew = FOLDERDESTINATION + "/noCoverImageFound/"        
         newFilename = folderDestinationNew + filenameOnly
-
 
     try:
         path = os.path.dirname(newFilename)

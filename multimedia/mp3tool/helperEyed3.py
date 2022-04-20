@@ -1,7 +1,6 @@
 import eyed3
 import requests
 
-
 from helperJson import convertStringToJson, saveJsonToFile
 import musicbrainzngs
 
@@ -48,6 +47,8 @@ def getAudioFile(mp3File):
             saveAudioFile(audiofile)
     except Exception as e:
         print ("- initializeMp3File: EXCEPTION " + str(e))
+
+    #searchString = cleanupFilenameForSearch(audiofile, mp3File)
 
     return audiofile
 

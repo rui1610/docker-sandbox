@@ -1,8 +1,9 @@
 import os
 import fnmatch
 import os
-from helperEyed3 import getAudioFile
-from helperGeneric import cleanupFilenameForSearch, metadataMissing
+import eyed3
+from helperEyed3 import getAudioFile, saveAudioFile
+from helperGeneric import cleanupFilenameForSearch, metadataMissing, deriveArtistAndTitleFromSearchString
 from helperItunes import addMetadataFromItunes
 from helperLyrics import addMetadataFromGenius
 from helperMusicBrainzngs import addMetadataFromMusicbrainzngs
@@ -30,6 +31,20 @@ def cleanUpFolders():
     os.system(command)
 
 
+def cleanFiles():
+    allFiles=[]
+    for folder, dirs, files in os.walk(FOLDERSOURCE):
+        for filename in files:
+            if fnmatch.fnmatch(filename, "*.mp3"):
+                mp3filenameFullpath = folder + "/" + filename
+
+                try:
+                    audiofile = eyed3.load(mp3filenameFullpath)
+                    audiofile.initTag()
+                    saveAudioFile(audiofile)
+                except Exception as e:
+                    print ("- initializeMp3File: EXCEPTION " + str(e))
+
 def addMetadataToFiles():
     allFiles=[]
     for folder, dirs, files in os.walk(FOLDERSOURCE):
@@ -39,6 +54,8 @@ def addMetadataToFiles():
                 print(mp3filenameFullpath)
                 audiofile = getAudioFile(mp3filenameFullpath)
                 searchString = cleanupFilenameForSearch(audiofile, filename)
+
+                audiofile = deriveArtistAndTitleFromSearchString(audiofile, searchString)
 
                 needsUpdate = metadataMissing(audiofile)
                 if needsUpdate is True:
@@ -60,3 +77,4 @@ def addMetadataToFiles():
 cleanUpFolders()
 
 addMetadataToFiles()
+#cleanFiles()

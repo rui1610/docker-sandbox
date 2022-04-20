@@ -56,12 +56,29 @@ def getMetadataFromItunes(searchString):
 
     return result
 
+def getBestMatch(audiofile, response):
+
+    artist = audiofile.tag.artist
+    title = audiofile.tag.title
+
+    result = None
+
+    maxMatch = 0
+    for entry in reversed(response):
+        thisArtist = entry["artistName"]
+        thisTitle  = entry["trackName"]
+        match = (100/len(artist)*len(thisArtist) + 100/len(title)*len(thisTitle) ) / 2
+        if match > maxMatch:
+            result = entry
+    return result    
+
+
 def addMetadataFromItunes(audiofile, searchString):
 
     myData = getMetadataFromItunes(searchString)
     if myData is not None and len(myData) > 0:
 
-        thisResponse = myData[0]
+        thisResponse = getBestMatch(audiofile,myData)
 
         audiofile.tag.artist = thisResponse["artistName"]
         audiofile.tag.title  = thisResponse["trackName"]

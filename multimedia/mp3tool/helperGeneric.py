@@ -47,7 +47,7 @@ def cleanupFilenameForSearch(audiofile, filename):
     #text = cleanUpText(filenameBase)
 
     text = specialCleanUpForArtist(text,",")
-    text = specialCleanUpForArtist(text,"&")
+    #text = specialCleanUpForArtist(text,"&")
 
     if " - " not in text:
         artist = audiofile.tag.artist
@@ -56,7 +56,25 @@ def cleanupFilenameForSearch(audiofile, filename):
             text = artist + " - " + title
         if artist is not None and title is None:
             text = artist + " - " + text
+    else:
+        artist, title = text.split(" - ")
+        artist = re.findall("[\dA-Za-z ]*", artist)[0].strip()
+        title = re.findall("[\dA-Za-z ]*", title)[0].strip()
+
+        audiofile.tag.artist = artist
+        audiofile.tag.title = title
+        text = artist + " - " + title
+
     return text
+
+def deriveArtistAndTitleFromSearchString(audiofile, searchString):
+    artist, title = searchString.split(" - ")
+    if audiofile.tag.artist is None:
+        audiofile.tag.artist = artist
+    if audiofile.tag.title is None:
+        audiofile.tag.title = title
+    
+    return audiofile
 
 #################################################################
 def checkIfGoodResult(searchString, artist, title):

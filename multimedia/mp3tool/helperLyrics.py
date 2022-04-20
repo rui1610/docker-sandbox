@@ -131,4 +131,30 @@ def addMetadataFromGenius(audiofile):
                 audiofile.tag.images.set(imageType, icon, 'image/jpg', getImageDescriptionForType(imageType))            
         saveAudioFile(audiofile)
 
+        # if ('collectionName' in thisResponse):
+        #     audiofile.tag.album = thisResponse['collectionName'] 
+
+        # if ('trackNumber' in thisResponse):
+        #     audiofile.tag.track = thisResponse['trackNumber'] 
+
+        # if ('trackCount' in thisResponse):
+        #     audiofile.tag.track_total = thisResponse['trackCount'] 
+
+        # if ('discCount' in thisResponse):
+        #     audiofile.tag.disc = thisResponse['discCount'] 
+
+        # if ('releaseDate' in thisResponse):
+        #     audiofile.tag.releaseDate = thisResponse['releaseDate']
+        # if ('artistViewUrl' in thisResponse):
+        #     audiofile.tag.artistViewUrl = thisResponse['artistViewUrl']
+
+        # if ('collectionViewUrl' in thisResponse):
+        #     audiofile.tag.collectionViewUrl = thisResponse['collectionViewUrl']
+
+        # if ('trackTimeMillis' in thisResponse):
+        #     audiofile.tag.trackTimeMillis = thisResponse['trackTimeMillis']
+
+        # if ('primaryGenreName' in thisResponse):
+        #     audiofile.tag.primaryGenreName= thisResponse['primaryGenreName']
+        #     audiofile.tag.genre = thisResponse['primaryGenreName']        
 

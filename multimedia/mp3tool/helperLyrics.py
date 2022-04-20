@@ -108,9 +108,9 @@ def getSongInfoFromGenius(audiofile):
             return None
     except Exception as e:
         print("WARNING: Timeout execption on genius API. No lyrics collected: " + str(e))
-        anotherTry = getSongInfoFromGenius(audiofile)
+        #anotherTry = getSongInfoFromGenius(audiofile)
 
-        return anotherTry
+        return None
 
 def addMetadataFromGenius(audiofile):
 

@@ -69,10 +69,8 @@ def cleanupFilenameForSearch(audiofile, filename):
 
 def deriveArtistAndTitleFromSearchString(audiofile, searchString):
     artist, title = searchString.split(" - ")
-    if audiofile.tag.artist is None:
-        audiofile.tag.artist = artist
-    if audiofile.tag.title is None:
-        audiofile.tag.title = title
+    audiofile.tag.artist = artist
+    audiofile.tag.title = title
     
     return audiofile
 

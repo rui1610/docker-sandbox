@@ -93,9 +93,9 @@ def getMusicbrainzCover(releaseId,type):
             imageDetails = list['images'][0] 
             if "image" in imageDetails:
                 urlCover = imageDetails["image"]
-            else:
-                if "thumbnails" in imageDetails and "large" in imageDetails["thumbnails"]:
-                    urlCover = imageDetails["thumbnails"]["large"]
+
+            if "thumbnails" in imageDetails and "large" in imageDetails["thumbnails"]:
+                urlCover = imageDetails["thumbnails"]["large"]
         if "thumbnails" in imageDetails and "small" in imageDetails["thumbnails"]:
             urlIcon = imageDetails["thumbnails"]["small"]
 

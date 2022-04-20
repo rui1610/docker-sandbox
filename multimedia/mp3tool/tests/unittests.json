@@ -1,0 +1,8 @@
+{
+    "determineArtistAndTitleFromFilename": [
+        {
+            "actual": "myArtist - myTitle.mp3",
+            "expected": ["myArtist", "myTitle"]
+        }
+    ]
+}

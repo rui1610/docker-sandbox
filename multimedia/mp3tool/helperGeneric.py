@@ -1,12 +1,33 @@
 from email.mime import audio
 import os
 import re
+from helperJson import getJsonFromFile
+import unittest
 import unidecode
 from shutil import copyfile
 
 from helperEyed3 import getAudioFile
 DELETESOURCEFILES = True
 FOLDERDESTINATION = "/mp3tool/output"
+SEPERATOR = " - "
+
+
+def determineArtistAndTitleFromFilename(filename):
+    artist = None
+    title = None
+
+    filenameOnly = os.path.basename(filename)
+    filenameBase = os.path.splitext(filenameOnly)[0]
+    text = filenameBase
+    counterSeperator = text.count(SEPERATOR)
+    if counterSeperator == 1:
+        artist, title = text.split(SEPERATOR)
+    if counterSeperator > 1:
+        posLastSeparator = text.rindex(SEPARATOR)
+        artist = text[posLastSeparator:]
+        title = text[:posLastSeparator+len(SEPERATOR)]
+    
+    return artist, title
 
 def cleanUpText(text):
 
@@ -56,21 +77,14 @@ def cleanupFilenameForSearch(audiofile, filename):
             text = artist + " - " + title
         if artist is not None and title is None:
             text = artist + " - " + text
-    else:
-        artist, title = text.split(" - ")
-        artist = re.findall("[\dA-Za-z ]*", artist)[0].strip()
-        title = re.findall("[\dA-Za-z ]*", title)[0].strip()
-
-        audiofile.tag.artist = artist
-        audiofile.tag.title = title
-        text = artist + " - " + title
 
     return text
 
 def deriveArtistAndTitleFromSearchString(audiofile, searchString):
-    artist, title = searchString.split(" - ")
-    audiofile.tag.artist = artist
-    audiofile.tag.title = title
+    if " - " in searchString and audiofile is not None:
+        artist, title = searchString.split(" - ")
+        audiofile.tag.artist = artist
+        audiofile.tag.title = title
     
     return audiofile
 
@@ -109,31 +123,36 @@ def metadataMissing(audiofile):
 
 def hasArtist(audiofile):
     hasInfo = False
-    info = audiofile.tag.artist
-    if info is not None or info != "":
-        hasInfo = True
+    if audiofile is not None:
+
+        info = audiofile.tag.artist
+        if info is not None or info != "":
+            hasInfo = True
     return hasInfo
 
 def hasCover(audiofile):
     hasInfo = False
-    counter = len(audiofile.tag.images )
-    if counter > 0:
-        hasInfo = True
+    if audiofile is not None:
+        counter = len(audiofile.tag.images )
+        if counter > 0:
+            hasInfo = True
     return hasInfo
 
 def hasTitle(audiofile):
     hasInfo = False
-    info = audiofile.tag.title
-    if info is not None or info != "":
-        hasInfo = True
+    if audiofile is not None:
+        info = audiofile.tag.title
+        if info is not None or info != "":
+            hasInfo = True
     return hasInfo
 
 def hasLyrics(audiofile):
     hasLyrics = False
-    for lyric in audiofile.tag.lyrics:
-        text = lyric.text
-        if text is not None and len(text) > 0:
-            hasLyrics = True
+    if audiofile is not None:
+        for lyric in audiofile.tag.lyrics:
+            text = lyric.text
+            if text is not None and len(text) > 0:
+                hasLyrics = True
     return hasLyrics
 
 #################################################################
@@ -186,3 +205,4 @@ def moveFile(audiofile, sourceFile):
         audiofile = None
     
     return None
+

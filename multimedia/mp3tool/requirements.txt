@@ -4,6 +4,7 @@ coverage==5.5
 deprecation==2.1.0
 eyed3==0.9.6
 filetype==1.0.10
+fuzzywuzzy==0.18.0
 get-cover-art==1.3.11
 idna==3.3
 inotify==0.2.10

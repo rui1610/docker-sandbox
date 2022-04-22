@@ -4,7 +4,7 @@ import requests
 import urllib.parse
 from helperEyed3 import getITunesCoverBig, getITunesCoverSmall, getImageDescriptionForType, saveAudioFile
 
-from helperGeneric import checkIfGoodResult
+from helperGeneric import fuzzyCheckIfGoodResult
 
 
 def sendRequestToItunes(searchString):
@@ -50,8 +50,9 @@ def getMetadataFromItunes(searchString):
     for thisResponse in response['results']:
         artist = thisResponse['artistName']
         title = thisResponse['trackName']
-        goodResult = checkIfGoodResult(searchString, artist, title)
+        goodResult, matchRatio = fuzzyCheckIfGoodResult(searchString, artist, title)
         if (goodResult == True and len(result) < 5):
+            thisResponse["matchRatio"] = matchRatio
             result.append(thisResponse)
 
     return result
@@ -67,13 +68,16 @@ def getBestMatch(audiofile, response):
     for entry in reversed(response):
         thisArtist = entry["artistName"]
         thisTitle  = entry["trackName"]
-        match = (100/len(artist)*len(thisArtist) + 100/len(title)*len(thisTitle) ) / 2
+        match  = entry["matchRatio"]
         if match > maxMatch:
+            maxMatch = match
             result = entry
     return result    
 
 
-def addMetadataFromItunes(audiofile, searchString):
+def addMetadataFromItunes(audiofile):
+
+    searchString = audiofile.tag.artist + " - " + audiofile.tag.title
 
     myData = getMetadataFromItunes(searchString)
     if myData is not None and len(myData) > 0:

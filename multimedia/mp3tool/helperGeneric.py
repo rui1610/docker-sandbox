@@ -5,8 +5,8 @@ from helperJson import getJsonFromFile
 import unittest
 import unidecode
 from shutil import copyfile
+from fuzzywuzzy import fuzz
 
-from helperEyed3 import getAudioFile
 DELETESOURCEFILES = True
 FOLDERDESTINATION = "/mp3tool/output"
 SEPERATOR = " - "
@@ -99,6 +99,20 @@ def deriveArtistAndTitleFromSearchString(audiofile, searchString):
     
     return audiofile
 
+def fuzzyCheckIfGoodResult(searchString, artist, title):
+    result = False
+
+    title = unidecode.unidecode(title.lower())
+    artist = unidecode.unidecode(artist.lower())
+    searchString = unidecode.unidecode(searchString.lower())
+
+    token_Sort_Ratio = fuzz.token_sort_ratio(artist + " - " + title,searchString)
+
+    if token_Sort_Ratio > 90:
+        return True,token_Sort_Ratio
+    else:
+        return False, token_Sort_Ratio
+
 #################################################################
 def checkIfGoodResult(searchString, artist, title):
     result = False
@@ -170,6 +184,7 @@ def hasLyrics(audiofile):
 def moveFile(audiofile, sourceFile):
 
     #audiofile = cleanupAudiofileArtistTitle(audiofile)
+
     artist = audiofile.tag.artist
     title = audiofile.tag.title
     counterImages = len(audiofile.tag.images )

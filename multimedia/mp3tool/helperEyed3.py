@@ -3,8 +3,12 @@ import requests
 
 from helperJson import convertStringToJson, saveJsonToFile
 import musicbrainzngs
-
+from helperGeneric import determineArtistAndTitleFromFilename
 #warnings.filterwarnings('error')
+
+import logging
+
+log = logging.getLogger(__name__)
 
 def saveAudioFile(audiofile):
     #audiofile.tag.save(version=(1,None,None))
@@ -39,16 +43,25 @@ def initAudioFile(mp3File):
 def getAudioFile(mp3File):
     initAudioFile(mp3File)
     audiofile = None
+    [artist, title] = determineArtistAndTitleFromFilename(mp3File)
 
     try:
         audiofile = eyed3.load(mp3File)
-        if (audiofile.tag == None):
+        if (audiofile.tag == None or "[INIT]" in mp3File):
             audiofile.initTag()
+            if artist is None or title is None:
+                log.error("Could not determine artist or title from filename.")
+                return None
+            audiofile.tag.artist = artist
+            audiofile.tag.title = title
             saveAudioFile(audiofile)
-    except Exception as e:
-        print ("- initializeMp3File: EXCEPTION " + str(e))
+        else:
+            audiofile.tag.artist = artist
+            audiofile.tag.title = title
+            saveAudioFile(audiofile)
 
-    #searchString = cleanupFilenameForSearch(audiofile, mp3File)
+    except Exception as e:
+        log.error("- initializeMp3File: EXCEPTION " + str(e))
 
     return audiofile
 

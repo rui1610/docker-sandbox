@@ -43,7 +43,10 @@ def sendRequestToMusicbrainz(searchString):
 
     return response
 
-def addMetadataFromMusicbrainzngs(audiofile, searchString):
+def addMetadataFromMusicbrainzngs(audiofile):
+
+    searchString = audiofile.tag.artist + " - " + audiofile.tag.title
+
     myData = getMetadataFromMusicbrainzngs(searchString)
     if myData is not None and len(myData) > 0:
         thisResponse = myData[0]

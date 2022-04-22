@@ -16,6 +16,7 @@ RUN  apk add  --no-cache --virtual .tmp gcc libc-dev linux-headers jpeg-dev zlib
     && cp /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 
 COPY multimedia/mp3tool/mp3tool.py $HOME_FOLDER
+COPY multimedia/mp3tool/test.sh $HOME_FOLDER
 COPY multimedia/mp3tool/helper*.py $HOME_FOLDER/
 COPY multimedia/mp3tool/tests $HOME_FOLDER/tests/
 

@@ -23,11 +23,22 @@ def determineArtistAndTitleFromFilename(filename):
     if counterSeperator == 1:
         artist, title = text.split(SEPERATOR)
     if counterSeperator > 1:
-        posLastSeparator = text.rindex(SEPARATOR)
+        posLastSeparator = text.rindex(SEPERATOR)
         artist = text[posLastSeparator:]
         title = text[:posLastSeparator+len(SEPERATOR)]
     
-    return artist, title
+    # Remove all text in brackets
+    title = re.sub("[\(\[].*?[\)\]]", "", title).strip()
+    artist = re.sub("[\(\[].*?[\)\]]", "", artist).strip()
+
+    # Remove all text that has things like "feat."
+    deletionList = ["feat."]
+    for entry in deletionList:
+        if entry in artist:
+            pos = artist.rindex(entry)
+            artist = artist[:pos]
+
+    return [artist, title]
 
 def cleanUpText(text):
 

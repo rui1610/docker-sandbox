@@ -5,10 +5,7 @@ import re
 import requests
 
 
-def getJsonFromFile(self, filename):
-    log = None
-    if self is not None:
-        log = self.log
+def getJsonFromFile(filename):
 
     data = None
     foundError = False
@@ -78,4 +75,3 @@ def addKeyValuePairToJsonFile(filename, key, value):
     myJson = getJsonFromFile(None, filename)
     myJson = addKeyValuePair(myJson, key, value)
     saveJsonToFile(filename, myJson)
-

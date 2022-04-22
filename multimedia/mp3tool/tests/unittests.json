@@ -1,19 +1,15 @@
 {
     "determineArtistAndTitleFromFilename": [
         {
-            "actual": "myArtist - myTitle.mp3",
+            "input": "myArtist - myTitle.mp3",
             "expected": ["myArtist", "myTitle"]
         },
         {
-            "actual": "Bob Seger & The Silver Bullet Band - Old Time Rock & Roll.mp3",
+            "input": "Bob Seger & The Silver Bullet Band - Old Time Rock & Roll.mp3",
             "expected": ["Bob Seger & The Silver Bullet Band", "Old Time Rock & Roll"]
         },
         {
-            "actual": "Boney M. & Sash! - Ma Baker (Boney M. vs. Sash!).mp3",
-            "expected": ["Boney M.", "Ma Baker"]
-        },
-        {
-            "actual": "Boney M. & Sash! - Ma Baker (Boney M. vs. Sash!).mp3",
+            "input": "Boney M. - Ma Baker (Boney M. vs. Sash!).mp3",
             "expected": ["Boney M.", "Ma Baker"]
         }
     ]

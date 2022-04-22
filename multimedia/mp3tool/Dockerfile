@@ -8,7 +8,7 @@ RUN  apk add  --no-cache --virtual .tmp gcc libc-dev linux-headers jpeg-dev zlib
     && pip install --no-cache-dir -r /tmp/pip-tmp/requirements.txt \
     && rm -rf /tmp/pip-tmp \
     && apk del .tmp gcc libc-dev linux-headers jpeg-dev zlib-dev \
-    && apk add bash \
+    && apk add bash sudo \
     && rm -r /tmp/* \
     && rm -rf /var/cache/apk/* \
     && mkdir -p $HOME_FOLDER/media \
@@ -17,6 +17,7 @@ RUN  apk add  --no-cache --virtual .tmp gcc libc-dev linux-headers jpeg-dev zlib
 
 COPY multimedia/mp3tool/mp3tool.py $HOME_FOLDER
 COPY multimedia/mp3tool/helper*.py $HOME_FOLDER/
+COPY multimedia/mp3tool/tests $HOME_FOLDER/tests/
 
 #ENTRYPOINT ["python","mp3tool.py"]
 CMD ["bash"]

@@ -3,7 +3,7 @@ import fnmatch
 import os
 import eyed3
 from helperEyed3 import getAudioFile, saveAudioFile
-from helperGeneric import hasArtist, hasCover, hasLyrics, hasTitle
+from helperGeneric import hasArtist, hasCover, hasLyrics, hasTitle, determineArtistAndTitleFromFilename
 from helperItunes import addMetadataFromItunes
 from helperLog import initLogger
 from helperLyrics import addMetadataFromGenius
@@ -46,12 +46,15 @@ def cleanFiles():
     allFiles=[]
     for folder, dirs, files in os.walk(FOLDERSOURCE):
         for filename in files:
-            if fnmatch.fnmatch(filename, "*.mp3"):
-                mp3filenameFullpath = folder + "/" + filename
+            if filename.endswith("mp3"):
+                mp3filenameFullpath = os.path.join(folder, filename)
                 try:
                     audiofile = eyed3.load(mp3filenameFullpath) 
                     audiofile.initTag()
                     log.info("deleted tags in mp3 file " + mp3filenameFullpath)
+                    [artist, title] = determineArtistAndTitleFromFilename(mp3filenameFullpath)
+                    audiofile.tag.artist = artist
+                    audiofile.tag.title = title
                     saveAudioFile(audiofile)
                     log.info("Saved mp3 file " + mp3filenameFullpath)
                 except Exception as e:
@@ -61,8 +64,8 @@ def addMetadataToFiles():
     allFiles=[]
     for folder, dirs, files in os.walk(FOLDERSOURCE):
         for filename in files:
-            if fnmatch.fnmatch(filename, "*.mp3"):
-                mp3filenameFullpath = folder + "/" + filename
+            if filename.endswith("mp3"):
+                mp3filenameFullpath = os.path.join(folder, filename)
                 audiofile = getAudioFile(mp3filenameFullpath)
 
                 if audiofile is not None:

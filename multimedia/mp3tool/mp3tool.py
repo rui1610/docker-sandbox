@@ -3,7 +3,7 @@ import fnmatch
 import os
 import eyed3
 from helperEyed3 import getAudioFile, saveAudioFile
-from helperGeneric import cleanupFilenameForSearch, metadataMissing, deriveArtistAndTitleFromSearchString, determineArtistAndTitleFromFilename
+from helperGeneric import hasArtist, hasCover, hasLyrics, hasTitle
 from helperItunes import addMetadataFromItunes
 from helperLog import initLogger
 from helperLyrics import addMetadataFromGenius
@@ -66,17 +66,14 @@ def addMetadataToFiles():
                 audiofile = getAudioFile(mp3filenameFullpath)
 
                 if audiofile is not None:
-                    needsUpdate = metadataMissing(audiofile)
-                    if needsUpdate is True:
+                    if hasCover(audiofile) is False or hasArtist(audiofile) is False or hasTitle(audiofile) is False:
                         addMetadataFromItunes(audiofile)
 
-                    needsUpdate = metadataMissing(audiofile)
-                    if needsUpdate is True:
-                        addMetadataFromGenius(audiofile)
-
-                    needsUpdate = metadataMissing(audiofile)
-                    if needsUpdate is True:
+                    if hasCover(audiofile) is False or hasArtist(audiofile) is False or hasTitle(audiofile) is False:
                         addMetadataFromMusicbrainzngs(audiofile)
+
+                    if hasLyrics(audiofile) is False:
+                        addMetadataFromGenius(audiofile)
 
                     addNameToImageIfMissing(audiofile)
                     moveFile(audiofile,mp3filenameFullpath)

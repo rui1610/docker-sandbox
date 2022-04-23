@@ -1,12 +1,10 @@
 import eyed3
+import musicbrainzngs
 import requests
+import logging
 
 from helperJson import convertStringToJson, saveJsonToFile
-import musicbrainzngs
 from helperGeneric import determineArtistAndTitleFromFilename
-#warnings.filterwarnings('error')
-
-import logging
 
 log = logging.getLogger(__name__)
 

@@ -76,22 +76,22 @@ def deleteLyricsIfContainingHtmlTags(audiofile):
             saveAudioFile(audiofile)
 
 
-def addLyrics(audiofile):
+# def addLyrics(audiofile):
 
-    lyrics = getLyricsFromGenius(audiofile)
+#     lyrics = getLyricsFromGenius(audiofile)
 
-    if lyrics is not None:
-        audiofile.tag.lyrics.set('"' + lyrics + '"')
-        saveAudioFile(audiofile)
-    else:
-        deleteLyricsIfContainingHtmlTags(audiofile)
+#     if lyrics is not None:
+#         audiofile.tag.lyrics.set('"' + lyrics + '"')
+#         saveAudioFile(audiofile)
+#     else:
+#         deleteLyricsIfContainingHtmlTags(audiofile)
 
-        url = prepareSearchUrl(audiofile)
-        content = getPageContent(url)
-        lyrics = getLyricsFromUrlContent(content)
-        if lyrics is not None:
-            audiofile.tag.lyrics.set('"' + lyrics + '"')
-            saveAudioFile(audiofile)
+#         url = prepareSearchUrl(audiofile)
+#         content = getPageContent(url)
+#         lyrics = getLyricsFromUrlContent(content)
+#         if lyrics is not None:
+#             audiofile.tag.lyrics.set('"' + lyrics + '"')
+#             saveAudioFile(audiofile)
 
 
 def getSongInfoFromGenius(audiofile):
@@ -120,13 +120,13 @@ def addMetadataFromGenius(audiofile):
             if metadata is not None:
                 lyrics = metadata.lyrics
                 audiofile.tag.lyrics.set('"' + lyrics + '"')
-        if hasCover(audiofile) is False:
-            metadata = getSongInfoFromGenius(audiofile)
-            if metadata is not None:
-                cover = requests.get(metadata.song_art_image_url, stream=True).raw.data
-                icon = requests.get(metadata.song_art_image_thumbnail_url, stream=True).raw.data
-                imageType = 3
-                audiofile.tag.images.set(imageType, cover, 'image/jpg', getImageDescriptionForType(imageType))            
-                imageType = 1
-                audiofile.tag.images.set(imageType, icon, 'image/jpg', getImageDescriptionForType(imageType))            
+        # if hasCover(audiofile) is False:
+        #     metadata = getSongInfoFromGenius(audiofile)
+        #     if metadata is not None:
+        #         cover = requests.get(metadata.song_art_image_url, stream=True).raw.data
+        #         icon = requests.get(metadata.song_art_image_thumbnail_url, stream=True).raw.data
+        #         imageType = 3
+        #         audiofile.tag.images.set(imageType, cover, 'image/jpg', getImageDescriptionForType(imageType))            
+        #         imageType = 1
+        #         audiofile.tag.images.set(imageType, icon, 'image/jpg', getImageDescriptionForType(imageType))            
         saveAudioFile(audiofile)

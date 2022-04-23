@@ -1,4 +1,3 @@
-from distutils.util import split_quoted
 import time
 import requests
 import urllib.parse
@@ -9,13 +8,13 @@ from helperGeneric import fuzzyCheckIfGoodResult
 
 def sendRequestToItunes(searchString):
 
-    maximumResults = 50
+    maximumResults = 200
     searchString = searchString.replace(':', '/')
 
     term = {"term":searchString}
 
     termUrlEncoded = urllib.parse.urlencode(term)
-    req_string = 'https://itunes.apple.com/search?' + termUrlEncoded + '&entity=musicTrack&limit=' + str(maximumResults)
+    req_string = 'https://itunes.apple.com/search?' + termUrlEncoded + '&entity=musicTrack&type=songs&limit=' + str(maximumResults)
 
     try:
         # Adding 3 seconds of delay here to not exceed iTunes API access limits of 20 API calls per minute
@@ -51,7 +50,7 @@ def getMetadataFromItunes(searchString):
         artist = thisResponse['artistName']
         title = thisResponse['trackName']
         goodResult, matchRatio = fuzzyCheckIfGoodResult(searchString, artist, title)
-        if (goodResult == True and len(result) < 5):
+        if goodResult == True:
             thisResponse["matchRatio"] = matchRatio
             result.append(thisResponse)
 
@@ -77,7 +76,7 @@ def getBestMatch(audiofile, response):
 
 def addMetadataFromItunes(audiofile):
 
-    searchString = audiofile.tag.artist + " - " + audiofile.tag.title
+    searchString = audiofile.tag.artist + " " + audiofile.tag.title
 
     myData = getMetadataFromItunes(searchString)
     if myData is not None and len(myData) > 0:

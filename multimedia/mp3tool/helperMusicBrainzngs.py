@@ -1,55 +1,67 @@
-import os
-import time
-import requests
 import musicbrainzngs
 from helperEyed3 import getImageDescriptionForType, getMusicbrainzCover, saveAudioFile
 
-from helperGeneric import checkIfGoodResult
+from helperGeneric import fuzzyCheckIfGoodResult
 
 MB_USERAGGENT_NAME    = "Rui's new app"
 MB_USERAGGENT_VERSION = "0.4"
 MB_USERAGGENT_LINK    = "https://ourNewMusikApp.de"
 
-def getMetadataFromMusicbrainzngs(searchString):
-
+def getMetadataFromMusicbrainzngs(artist, title):
+    searchString = artist + " - " + title
     try:
-        response = sendRequestToMusicbrainz(searchString)
+        response = sendRequestToMusicbrainz(artist, title)
         result = []
 
         for thisResponse in response['recording-list']:
             artist     = thisResponse["artist-credit-phrase"]
             title      = thisResponse["title"]
             fitScore   = thisResponse["ext:score"]
-            goodResult = checkIfGoodResult(searchString, artist, title)
-            if (goodResult == True and len(result) < 5):
-                if fitScore is not None and int(fitScore) > 90:
-                    result.append(thisResponse)
+            goodResult, matchRatio = fuzzyCheckIfGoodResult(searchString, artist, title)
+            if goodResult == True :
+                thisResponse["matchRatio"] = matchRatio
+                result.append(thisResponse)
         return result
-
     except Exception as e:
         print (" - addItunesCoverArt: EXCEPTION found")
         print ("   >> search string: " + searchString)
         print ("   >> " + str(e))
         return None
 
-    return None
 
-def sendRequestToMusicbrainz(searchString):
+def sendRequestToMusicbrainz(artist, title):
 
-    maximumResults = 50
+    maximumResults = 200
     musicbrainzngs.set_useragent(MB_USERAGGENT_NAME, MB_USERAGGENT_VERSION, MB_USERAGGENT_LINK)
-
-    response = musicbrainzngs.search_recordings(searchString, limit=maximumResults)
-
+    response = musicbrainzngs.search_recordings(artist=artist, recording = title,  limit=maximumResults, strict=False)
     return response
+
+
+def getBestMatch(audiofile, response):
+
+    artist = audiofile.tag.artist
+    title = audiofile.tag.title
+
+    result = None
+
+    maxMatch = 0
+    for entry in reversed(response):
+        thisArtist = entry["artist-credit-phrase"]
+        thisTitle  = entry["title"]
+        match  = entry["matchRatio"]
+        if match > maxMatch:
+            maxMatch = match
+            result = entry
+    return result   
 
 def addMetadataFromMusicbrainzngs(audiofile):
 
     searchString = audiofile.tag.artist + " - " + audiofile.tag.title
 
-    myData = getMetadataFromMusicbrainzngs(searchString)
+    myData = getMetadataFromMusicbrainzngs(audiofile.tag.artist, audiofile.tag.title)
     if myData is not None and len(myData) > 0:
-        thisResponse = myData[0]
+        #thisResponse = myData[0]
+        thisResponse = getBestMatch(audiofile,myData)
 
         audiofile.tag.artist = thisResponse["artist-credit-phrase"]
         audiofile.tag.title  = thisResponse["title"]

@@ -1,3 +1,5 @@
+from email.mime import audio
+from helperGeneric import determineArtistAndTitleFromFilename
 import musicbrainzngs
 from helperEyed3 import getImageDescriptionForType, getMusicbrainzCover, saveAudioFile
 
@@ -7,26 +9,51 @@ MB_USERAGGENT_NAME    = "Rui's new app"
 MB_USERAGGENT_VERSION = "0.4"
 MB_USERAGGENT_LINK    = "https://ourNewMusikApp.de"
 
-def getMetadataFromMusicbrainzngs(artist, title):
-    searchString = artist + " - " + title
+def getMetadataFromMusicbrainzngs(audiofile):
+    result = None
+    matches = []
+
+    artist = audiofile.tag.artist
+    title = audiofile.tag.title
     try:
         response = sendRequestToMusicbrainz(artist, title)
-        result = []
 
-        for thisResponse in response['recording-list']:
-            artist     = thisResponse["artist-credit-phrase"]
-            title      = thisResponse["title"]
-            fitScore   = thisResponse["ext:score"]
-            goodResult, matchRatio = fuzzyCheckIfGoodResult(searchString, artist, title)
-            if goodResult == True :
-                thisResponse["matchRatio"] = matchRatio
-                result.append(thisResponse)
-        return result
+        if response is not None and "recording-list" in response:
+            for thisResponse in response['recording-list']:
+                artistFound     = thisResponse["artist-credit-phrase"]
+                titleFound      = thisResponse["title"]
+                fitScore   = thisResponse["ext:score"]
+                matchRatio = fuzzyCheckIfGoodResult(artist, title, artistFound, titleFound)
+                if matchRatio > 90:
+                    thisResponse["matchRatio"] = matchRatio
+                    matches.append(thisResponse)
     except Exception as e:
         print (" - addItunesCoverArt: EXCEPTION found")
-        print ("   >> search string: " + searchString)
         print ("   >> " + str(e))
-        return None
+        return matches
+    
+    if len(matches) == 0:
+        [artistFilename, titleFilename] = determineArtistAndTitleFromFilename(audiofile.path)
+        if artistFilename != artist or titleFilename != title:
+            try:
+                response = sendRequestToMusicbrainz(artistFilename, titleFilename)
+
+                if response is not None and "recording-list" in response:
+                    for thisResponse in response['recording-list']:
+                        artistFound     = thisResponse["artist-credit-phrase"]
+                        titleFound      = thisResponse["title"]
+                        fitScore   = thisResponse["ext:score"]
+                        matchRatio = fuzzyCheckIfGoodResult(artist, title, artistFound, titleFound)
+                        if matchRatio > 90:
+                            thisResponse["matchRatio"] = matchRatio
+                            matches.append(thisResponse)
+            except Exception as e:
+                print (" - addItunesCoverArt: EXCEPTION found")
+                print ("   >> " + str(e))
+                return matches        
+    result = getBestMatch(audiofile,matches)
+
+    return result
 
 
 def sendRequestToMusicbrainz(artist, title):
@@ -45,7 +72,7 @@ def getBestMatch(audiofile, response):
     result = None
 
     maxMatch = 0
-    for entry in reversed(response):
+    for entry in response:
         thisArtist = entry["artist-credit-phrase"]
         thisTitle  = entry["title"]
         match  = entry["matchRatio"]
@@ -58,10 +85,8 @@ def addMetadataFromMusicbrainzngs(audiofile):
 
     searchString = audiofile.tag.artist + " - " + audiofile.tag.title
 
-    myData = getMetadataFromMusicbrainzngs(audiofile.tag.artist, audiofile.tag.title)
-    if myData is not None and len(myData) > 0:
-        #thisResponse = myData[0]
-        thisResponse = getBestMatch(audiofile,myData)
+    thisResponse = getMetadataFromMusicbrainzngs(audiofile)
+    if thisResponse is not None:
 
         audiofile.tag.artist = thisResponse["artist-credit-phrase"]
         audiofile.tag.title  = thisResponse["title"]
@@ -75,11 +100,11 @@ def addMetadataFromMusicbrainzngs(audiofile):
                 audiofile.tag.releaseDate = thisResponse["release-list"][0]["date"]
             if ('id' in thisResponse["release-list"][0]):
                 releaseId = thisResponse["release-list"][0]["id"]
-                cover = getMusicbrainzCover(releaseId,"cover")
+                cover = getMusicbrainzCover(thisResponse,"cover")
                 if cover is not None:
                     imageType = 3
                     audiofile.tag.images.set(imageType, cover, 'image/jpg', getImageDescriptionForType(imageType))            
-                cover = getMusicbrainzCover(releaseId,"icon")
+                cover = getMusicbrainzCover(thisResponse,"icon")
                 if cover is not None:
                     imageType = 1
                     audiofile.tag.images.set(imageType, cover, 'image/jpg', getImageDescriptionForType(imageType))            

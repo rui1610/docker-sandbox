@@ -90,14 +90,10 @@ def getITunesCoverSmall(response):
     return requests.get(url, stream=True).raw.data
 
 #################################################################
-def getMusicbrainzCover(releaseId,type):
-    MB_USERAGGENT_NAME    = "Rui's new app"
-    MB_USERAGGENT_VERSION = "0.4"
-    MB_USERAGGENT_LINK    = "https://ourNewMusikApp.de"    
-    musicbrainzngs.set_useragent(MB_USERAGGENT_NAME, MB_USERAGGENT_VERSION, MB_USERAGGENT_LINK)
-    try:
-        list = musicbrainzngs.get_image_list(releaseId)
-        saveJsonToFile("images.json",list)
+def getMusicbrainzCover(response,type):
+
+    list = getImageList(response["release-list"][0]["id"])
+    if list is not None:
         urlCover=None
         urlIcon=None
         if "images" in list and len(list['images']) > 0:
@@ -114,14 +110,35 @@ def getMusicbrainzCover(releaseId,type):
             return requests.get(urlIcon, stream=True).raw.data
         else:
             return requests.get(urlCover, stream=True).raw.data
+    return None
 
 
-
+def getImageList(id):
+    result = None
+    MB_USERAGGENT_NAME    = "Rui's new app"
+    MB_USERAGGENT_VERSION = "0.4"
+    MB_USERAGGENT_LINK    = "https://ourNewMusikApp.de"    
+    musicbrainzngs.set_useragent(MB_USERAGGENT_NAME, MB_USERAGGENT_VERSION, MB_USERAGGENT_LINK)
+    try:
+        result = musicbrainzngs.get_image_list(id)
     except Exception as e:
-        print (" - addCoverImageForReleaseId: EXCEPTION found")
-        print ("   >> " + str(e))
-        return None
+        result = None
 
+    return result
+
+
+def getImage(id):
+    result = None
+    MB_USERAGGENT_NAME    = "Rui's new app"
+    MB_USERAGGENT_VERSION = "0.4"
+    MB_USERAGGENT_LINK    = "https://ourNewMusikApp.de"    
+    musicbrainzngs.set_useragent(MB_USERAGGENT_NAME, MB_USERAGGENT_VERSION, MB_USERAGGENT_LINK)
+    try:
+        result = musicbrainzngs.get_image(id)
+    except Exception as e:
+        result = None
+
+    return result
 # def updateMp3WithMetadata(audiofile,metadata):
 
 #     if audiofile is not None:

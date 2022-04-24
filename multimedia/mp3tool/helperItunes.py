@@ -1,9 +1,10 @@
+from email.mime import audio
 import time
 import requests
 import urllib.parse
 from helperEyed3 import getITunesCoverBig, getITunesCoverSmall, getImageDescriptionForType, saveAudioFile
 
-from helperGeneric import fuzzyCheckIfGoodResult
+from helperGeneric import fuzzyCheckIfGoodResult, determineArtistAndTitleFromFilename
 
 
 def sendRequestToItunes(searchString):
@@ -34,25 +35,39 @@ def sendRequestToItunes(searchString):
         return None
 
 
-def getMetadataFromItunes(searchString):
+def getMetadataFromItunes(audiofile):
+    result = None
+    matches = []
 
-    response = sendRequestToItunes(searchString)
-    # If nothing is found try to switch artist and title
-    if response == None:
-        splitChars = " - "
-        splitText = searchString.split(splitChars)
-        if len(splitText) == 2:
-            searchString = splitText[1] + splitChars + splitText[0]
-            response = sendRequestToItunes(searchString)
+    artist = audiofile.tag.artist
+    title = audiofile.tag.title
 
-    result = []
-    for thisResponse in response['results']:
-        artist = thisResponse['artistName']
-        title = thisResponse['trackName']
-        goodResult, matchRatio = fuzzyCheckIfGoodResult(searchString, artist, title)
-        if goodResult == True:
-            thisResponse["matchRatio"] = matchRatio
-            result.append(thisResponse)
+    response = sendRequestToItunes(artist + " " + title)
+
+    if response is not None and "results" in response:
+        for thisResponse in response['results']:
+            artistFound = thisResponse['artistName']
+            titleFound = thisResponse['trackName']
+            matchRatio = fuzzyCheckIfGoodResult(artist, title, artistFound, titleFound)
+            if matchRatio > 90:
+                thisResponse["matchRatio"] = matchRatio
+                matches.append(thisResponse)
+    
+    if len(matches) == 0:
+        [artistFilename, titleFilename] = determineArtistAndTitleFromFilename(audiofile.path)
+        if artistFilename != artist or titleFilename != title:
+            response = sendRequestToItunes(artistFilename + " " + titleFilename)
+
+            if response is not None and "matches" in response:
+                for thisResponse in response['results']:
+                    artistFound = thisResponse['artistName']
+                    titleFound = thisResponse['trackName']
+                    matchRatio = fuzzyCheckIfGoodResult(artist, title, artistFound, titleFound)
+                    if matchRatio > 90:
+                        thisResponse["matchRatio"] = matchRatio
+                        matches.append(thisResponse)
+
+    result = getBestMatch(audiofile,matches)
 
     return result
 
@@ -64,7 +79,7 @@ def getBestMatch(audiofile, response):
     result = None
 
     maxMatch = 0
-    for entry in reversed(response):
+    for entry in response:
         thisArtist = entry["artistName"]
         thisTitle  = entry["trackName"]
         match  = entry["matchRatio"]
@@ -76,12 +91,10 @@ def getBestMatch(audiofile, response):
 
 def addMetadataFromItunes(audiofile):
 
-    searchString = audiofile.tag.artist + " " + audiofile.tag.title
+#    searchString = audiofile.tag.artist + " " + audiofile.tag.title
 
-    myData = getMetadataFromItunes(searchString)
-    if myData is not None and len(myData) > 0:
-
-        thisResponse = getBestMatch(audiofile,myData)
+    thisResponse = getMetadataFromItunes(audiofile)
+    if thisResponse is not None:
 
         audiofile.tag.artist = thisResponse["artistName"]
         audiofile.tag.title  = thisResponse["trackName"]

@@ -1,7 +1,7 @@
 from email.mime import audio
 from helperGeneric import determineArtistAndTitleFromFilename
 import musicbrainzngs
-from helperEyed3 import getImageDescriptionForType, getMusicbrainzCover, saveAudioFile
+from helperEyed3 import getImageDescriptionForType, getImageList, getMusicbrainzCover, saveAudioFile
 
 from helperGeneric import fuzzyCheckIfGoodResult
 
@@ -76,9 +76,25 @@ def getBestMatch(audiofile, response):
         thisArtist = entry["artist-credit-phrase"]
         thisTitle  = entry["title"]
         match  = entry["matchRatio"]
+        entry["hasCover"] = False
+
+        if ('id' in entry["release-list"][0]):
+            releaseId = entry["release-list"][0]["id"]
+            list = getImageList(releaseId)
+            if list is not None and len(list) > 0:
+                entry["hasCover"] = True
+
         if match > maxMatch:
             maxMatch = match
             result = entry
+
+        # Take an entry that has a cover image (even if the match ratio is lower)
+        if entry["hasCover"] is True and result["hasCover"] is False:
+            return entry
+        # If we have an entry already with cover images, just take that one!
+        if entry["hasCover"] is True and result["hasCover"] is True:
+            return entry
+
     return result   
 
 def addMetadataFromMusicbrainzngs(audiofile):

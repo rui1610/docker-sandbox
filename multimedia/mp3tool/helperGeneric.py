@@ -119,6 +119,17 @@ def fuzzyCheckIfGoodResult(artistSearch, titleSearch, artistFound, titleFound):
     token_Sort_Ratio = fuzz.token_sort_ratio(artistSearch + " " + titleSearch , artistFound + " " + titleFound)
     log.debug("ratio title : " + str(token_Sort_Ratio))
 
+
+    if token_Sort_Ratio <= 90:
+        if artistSearch in artistFound:
+            token_Sort_Ratio_artist_smart = fuzz.token_sort_ratio(artistFound + " " + titleSearch , artistFound + " " + titleFound)
+            if token_Sort_Ratio_artist_smart > 90:
+                return token_Sort_Ratio_artist_smart
+        if titleSearch in titleFound:
+            token_Sort_Ratio_title_smart = fuzz.token_sort_ratio(artistSearch + " " + titleFound , artistFound + " " + titleFound)
+            if token_Sort_Ratio_title_smart > 90:
+                return token_Sort_Ratio_title_smart
+
     return token_Sort_Ratio
 
 #################################################################

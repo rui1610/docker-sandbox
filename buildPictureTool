@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+#imagename="ghcr.io/rui1610/docker-sandbox/mp3tool"
+#imagename="mp3tool"
+inputFolder=/Users/d045023/Desktop/temp/multimedia/bilder/zusortieren
+outputFolder=/Users/d045023/Desktop/temp/multimedia/bilder/sortiert
+
+docker image build -t picturetool:latest -f "multimedia/picturetool/Dockerfile"  .
+
+docker container run --rm  -it -d --name "picturetool" \
+                        --mount type=bind,source="${inputFolder}/",target="/picturetool/input" \
+                        --mount type=bind,source="${outputFolder}/",target="/picturetool/output" \
+                        "picturetool:latest"

@@ -66,5 +66,6 @@ ARG FILESYSTEM_IMAGE_URL="https://downloads.raspberrypi.org/raspios_lite_armhf/i
 #RUN wget -O $FILESYSTEM_ZIP $FILESYSTEM_IMAGE_URL 
 ADD $FILESYSTEM_IMAGE_URL "/filesystem.xz"
 ADD pi_ssh_enable.exp /pi_ssh_enable.exp
+ADD userconf.txt /userconf.txt
 
 #RUN echo "$FILESYSTEM_IMAGE_CHECKSUM  $FILESYSTEM_ZIP | sha256sum -c

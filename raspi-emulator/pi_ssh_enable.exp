@@ -14,4 +14,13 @@ spawn /usr/local/bin/qemu-system-arm \
   --no-reboot \
   --display none \
   --serial mon:stdio
+expect "raspberrypi login:"
+send -- "user\r"
+expect "Password:"
+send -- "password\r"
+expect "user@raspberrypi:"
+send -- "sudo systemctl enable ssh\r"
+expect "user@raspberrypi:"
+send -- "sudo systemctl start ssh\r"
+expect "user@raspberrypi:"
 expect eof

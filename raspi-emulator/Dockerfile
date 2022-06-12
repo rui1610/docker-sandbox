@@ -1,5 +1,4 @@
 # From https://appfleet.com/blog/raspberry-pi-cluster-emulation-with-docker-compose/
-
 FROM ubuntu AS qemu-system-arm-builder
 ARG QEMU_VERSION=4.2.0
 ENV QEMU_TARBALL="qemu-${QEMU_VERSION}.tar.xz"
@@ -19,12 +18,12 @@ RUN apt-get update && \
                        flex \
                        bison
 
-RUN wget "https://download.qemu.org/${QEMU_TARBALL}"
+RUN wget -q "https://download.qemu.org/${QEMU_TARBALL}"
 
-RUN # Verify signatures...
-RUN wget "https://download.qemu.org/${QEMU_TARBALL}.sig"
-RUN gpg --keyserver keyserver.ubuntu.com --recv-keys CEACC9E15534EBABB82D3FA03353C9CEF108B584
-RUN gpg --verify "${QEMU_TARBALL}.sig" "${QEMU_TARBALL}"
+RUN # Verify signatures... \
+    && wget -q "https://download.qemu.org/${QEMU_TARBALL}.sig" \
+    && gpg --keyserver keyserver.ubuntu.com --recv-keys CEACC9E15534EBABB82D3FA03353C9CEF108B584 \
+    && gpg --verify "${QEMU_TARBALL}.sig" "${QEMU_TARBALL}"
 
 RUN tar xvf "${QEMU_TARBALL}"
 

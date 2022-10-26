@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+#imagename="ghcr.io/rui1610/docker-sandbox/mp3tool"
+imagename="picduplicates"
+inputFolder=/Users/d045023/bilder/sortiert/final
+
+
+echo -e "${GREEN}Cleaning up containers and images (if existing)${NOCOLOR}"
+docker container stop   "${imagename}"
+docker container rm  -f "${imagename}"
+docker image     rmi -f "${imagename}"
+
+
+docker image build -t picduplicates:latest -f "multimedia/picduplicates/Dockerfile"  .
+
+docker container run --rm  -it -d --name "${imagename}" \
+                        --mount type=bind,source="${inputFolder}/",target="/${imagename}/input" \
+                        "${imagename}:latest"
